@@ -42,14 +42,14 @@ class StudentLead(models.Model):
          return self.user.username
 
 class Project(models.Model):
-    student_lead = models.OneToOneField(StudentLead, on_delete=models.CASCADE, related_name="project")
+    student_lead = models.OneToOneField(StudentLead, on_delete=models.CASCADE, related_name="project", null=True, blank=True)
     title = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.title
 
 class StudentMember(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="members")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="members", null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 

@@ -30,7 +30,64 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    // Login User
+    // Register user
+    const registerUser = async (e) => {
+        e.preventDefault();
+        let errorMessage = ''; // Default error message
+
+        const registrationData = {
+            username: e.target.username.value,
+            email: e.target.email.value,
+            password: e.target.password.value,
+            role: e.target.role.value,
+        };
+
+        // Log the data before sending to API
+        console.log("Registering with data:", registrationData);
+
+        let response = await fetch('http://127.0.0.1:8000/user/register/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(registrationData),
+        });
+
+        let data = await response.json();
+
+        console.log("Registration response:", data); // Log response to debug
+
+        if (response.status === 201) {
+            // Registration is successful, proceed to login
+            let loginResponse = await fetch('http://127.0.0.1:8000/user/token/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: e.target.username.value,
+                    password: e.target.password.value,
+                }),
+            });
+
+            let loginData = await loginResponse.json();
+
+            if (loginResponse.status === 200) {
+                setAuthTokens(loginData);
+                setUser(jwtDecode(loginData.access));
+                localStorage.setItem('authTokens', JSON.stringify(loginData));
+                localStorage.setItem('userRole', loginData.role);
+                navigate('/'); // Navigate after successful login
+            } else {
+                errorMessage = 'Login failed after registration';
+            }
+        } else {
+            // If registration fails, capture backend errors
+            console.log("Registration failed with error:", data);
+            errorMessage = data?.non_field_errors?.[0] || 'An error occurred during registration';
+        }
+
+        // Return error message for the UI
+        return errorMessage;
+    };
+
+    // Login user
     const loginUser = async (e, setError) => {
         e.preventDefault();
         let response = await fetch('http://127.0.0.1:8000/user/token/', {
@@ -55,7 +112,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Logout User
+    // Logout user
     const logoutUser = () => {
         setAuthTokens(null);
         setUser(null);
@@ -65,7 +122,7 @@ export const AuthProvider = ({ children }) => {
         navigate('/login');
     };
 
-    // Update Token
+    // Update token
     const updateToken = async () => {
         if (!authTokens?.refresh) {
             logoutUser();
@@ -117,7 +174,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, authTokens, loginUser, logoutUser }}>
+        <AuthContext.Provider value={{ user, authTokens, loginUser, logoutUser, registerUser }}>
             {loading ? <p>Loading...</p> : children}
         </AuthContext.Provider>
     );

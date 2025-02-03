@@ -2,20 +2,23 @@ import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
-
 const RegisterPage = () => {
   const { registerUser } = useContext(AuthContext);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // Track loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({}); // Clear previous errors
+    setLoading(true); // Set loading state to true when form is submitting
 
     const responseErrors = await registerUser(e);
     
     if (responseErrors) {
       setErrors(responseErrors); // Set validation errors from backend
     }
+
+    setLoading(false); // Reset loading state after submission
   };
 
   return (
@@ -83,12 +86,12 @@ const RegisterPage = () => {
             </select>
           </div>
 
-
           <button
             type="submit"
-            className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+            disabled={loading} // Disable the button while loading
+            className={`w-full py-3 text-white font-semibold rounded-md transition ${loading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
           >
-            Register
+            {loading ? 'Processing...' : 'Register'} {/* Button text change */}
           </button>
         </form>
 

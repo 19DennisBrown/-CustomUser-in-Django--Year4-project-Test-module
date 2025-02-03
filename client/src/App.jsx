@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import Profile from './pages/Profile';
 // import Header from './components/Header';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           {/* <Header /> */}
           <Routes>
             <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+            <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage/>} />
           </Routes>

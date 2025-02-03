@@ -26,4 +26,7 @@ urlpatterns = [
     path('student/profile/', student_lead_detail, name='student-profile'),
     path('student/project/', create_project, name='create-project'),
     path('supervisor/students/', supervisor_students, name='supervisor-students'),
+
+
+    path('create-profile/', views.CreateProfileView.as_view(), name='create-profile'),
 ]

@@ -50,3 +50,16 @@ class StudentMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentMember
         fields = '__all__'
+
+from rest_framework import serializers
+from .models import StudentLead, Supervisor
+
+class SupervisorProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Supervisor
+        fields = ['user', 'department']  # Add any fields that you want to expose in the profile
+
+class StudentLeadProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentLead
+        fields = ['user', 'supervisor']

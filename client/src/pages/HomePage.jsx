@@ -1,5 +1,6 @@
 import  {useState, useEffect, useContext} from 'react'
 import AuthContext from '../context/AuthContext'
+import { Link } from 'react-router-dom'
 
 import Header from '../components/Header'
 
@@ -35,7 +36,11 @@ const HomePage = () => {
         <div className="p-6 max-w-3xl mx-auto bg-white shadow-md rounded-lg">
             <Header/>
             <p className="text-lg font-semibold text-gray-700 mb-4">You are logged into the home page!</p>
-
+            <div className="">
+                <button>
+                    <Link to='/profile'>Create Profile</Link>
+                </button>
+            </div>
             <ul className="space-y-4">
                 {students.map(student => (
                     <li 
