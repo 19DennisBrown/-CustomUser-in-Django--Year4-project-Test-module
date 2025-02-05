@@ -1,7 +1,7 @@
 
 
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -129,66 +129,90 @@ def supervisor_students(request):
 
 
 
+# Correct way to create a Supervisor and its Profile
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import User, Supervisor
+from .serializers import UserSerializer, SupervisorSerializer
 
+class CreateSupervisorAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Get the incoming user data from the request
+        user_data = request.data
+        user_serializer = UserSerializer(data=user_data)
+        
+        if user_serializer.is_valid():
+            # Create the user (this will automatically create a username)
+            user = user_serializer.save()
 
+            # Create the supervisor (no need to send username here)
+            supervisor = Supervisor.objects.create(user=user)
 
-# views.py
+            # Create the supervisor profile, use the created user (not the username)
+            supervisor_profile_data = {
+                'supervisor': supervisor,
+                'first_name': user_data['first_name'],
+                'last_name': user_data['last_name'],
+                'department': user_data['department'],
+            }
+
+            # Create and validate the supervisor profile serializer
+            supervisor_profile_serializer = SupervisorSerializer(data=supervisor_profile_data)
+
+            if supervisor_profile_serializer.is_valid():
+                supervisor_profile_serializer.save()
+                return Response({"message": "Supervisor created successfully!"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(supervisor_profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # If the user serializer is invalid, return errors
+        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from .models import StudentLead, Supervisor, User
-from .serializers import SupervisorProfileSerializer, StudentLeadProfileSerializer
+from .models import StudentLead, Supervisor
+from .serializers import StudentLeadSerializer
 
-class CreateProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+class CreateStudentLeadAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        # Get incoming data for StudentLead profile
+        student_lead_data = request.data
+        
+        # Ensure that the supervisor is passed to the view
+        supervisor_id = student_lead_data.get('supervisor')
+        if supervisor_id:
+            try:
+                supervisor = Supervisor.objects.get(user_id=supervisor_id)
+            except Supervisor.DoesNotExist:
+                return Response({"error": "Supervisor not found."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Supervisor is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request):
-        user = request.user
-        data = request.data
+        # Initialize the StudentLeadSerializer with the incoming data and supervisor
+        student_lead_serializer = StudentLeadSerializer(
+            data=student_lead_data,
+            context={'request': request, 'supervisor': supervisor}
+        )
+        
+        if student_lead_serializer.is_valid():
+            # Create and save the StudentLead profile
+            student_lead_serializer.save()
+            return Response({"message": "StudentLead profile created successfully!"}, status=status.HTTP_201_CREATED)
+        
+        return Response(student_lead_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Log the data being received
-        print("Received data:", data)
 
-        # If user is a supervisor, handle supervisor profile creation
-        if user.role == 'supervisor':
-            # Check if the supervisor profile already exists
-            if hasattr(user, 'supervisor'):
-                return Response({"detail": "Profile already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-            supervisor_data = {
-                'user': user.id,
-                'department': data.get('department', '')  # Ensure department is sent
-            }
+from django.http import JsonResponse
+from .models import Supervisor, StudentLead  # Assuming you store users in this model
 
-            if not supervisor_data['department']:  # Ensure department is provided
-                return Response({"detail": "Department is required for Supervisor profile."}, status=status.HTTP_400_BAD_REQUEST)
+def list_supervisors(request):
+    supervisors = Supervisor.objects.filter().values("user_id", "first_name", "last_name", "department")
+    return JsonResponse(list(supervisors), safe=False)
 
-            serializer = SupervisorProfileSerializer(data=supervisor_data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # If user is a student, handle student profile creation
-        elif user.role == 'student':
-            # Check if the student lead profile already exists
-            if hasattr(user, 'studentlead'):
-                return Response({"detail": "Profile already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-            student_lead_data = {
-                'user': user.id,
-                'supervisor': data.get('supervisor', None)  # Ensure supervisor ID is provided
-            }
-
-            if not student_lead_data['supervisor']:  # Ensure supervisor is provided
-                return Response({"detail": "Supervisor is required for Student Lead profile."}, status=status.HTTP_400_BAD_REQUEST)
-
-            serializer = StudentLeadProfileSerializer(data=student_lead_data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({"detail": "Invalid role."}, status=status.HTTP_400_BAD_REQUEST)
+def list_studentlead(request):
+    supervisors = StudentLead.objects.filter().values("user_id", "first_name", "last_name", "programme")
+    return JsonResponse(list(supervisors), safe=False)

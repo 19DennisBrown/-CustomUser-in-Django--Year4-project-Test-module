@@ -60,19 +60,6 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-gray-700 font-medium">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>}
-          </div>
-
-          <div>
             <label htmlFor="role" className="block text-gray-700 font-medium">
               Role
             </label>
@@ -86,10 +73,30 @@ const RegisterPage = () => {
             </select>
           </div>
 
+
+          <div>
+            <label htmlFor="password" className="block text-gray-700 font-medium">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              required
+              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>}
+          </div>
+
+
           <button
             type="submit"
             disabled={loading} // Disable the button while loading
-            className={`w-full py-3 text-white font-semibold rounded-md transition ${loading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+            className={` w-full  py-3  text-white font-semibold  rounded-md   transition 
+            ${loading ? 
+              'w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin' : 
+              'bg-blue-500 hover:bg-blue-600 hover:opacity-80'
+            }
+          `}
           >
             {loading ? 'Processing...' : 'Register'} {/* Button text change */}
           </button>

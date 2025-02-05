@@ -40,20 +40,33 @@ const LoginPage = () => {
           type="text"
           name="username"
           placeholder="Enter Username"
+          required
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
         <input
           type="password"
           name="password"
+          required
           placeholder="Enter Password"
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
         />
 
         <input
           type="submit"
-          value={loading ? "Processing..." : "Login"} // Change button text to "Processing..." when loading
+          value={loading ? "" : "Login"} // Change button text to "Processing..." when loading
           disabled={loading} // Disable the button while loading
-          className={`w-full font-semibold py-3 rounded-md transition ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-600 cursor-pointer'}`}
+          className={`
+            w-full 
+            py-3 
+            text-white 
+            font-semibold 
+            rounded-md 
+            transition 
+            ${loading ? 
+              'w-4 h-4 border-t-4 border-blue-600 border-solid rounded-full animate-spin' : 
+              'bg-blue-500 hover:bg-blue-600 hover:opacity-80'
+            }
+          `}
         />
       </form>
 

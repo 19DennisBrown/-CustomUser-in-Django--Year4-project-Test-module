@@ -28,5 +28,10 @@ urlpatterns = [
     path('supervisor/students/', supervisor_students, name='supervisor-students'),
 
 
-    path('create-profile/', views.CreateProfileView.as_view(), name='create-profile'),
+    path('create-profile/supervisor/', views.CreateSupervisorAPIView.as_view(), name='create_supervisor_profile'),
+    path('create-profile/studentlead/', views.CreateStudentLeadAPIView.as_view(), name='create_student_profile'),
+
+
+    path('supervisors/', views.list_supervisors, name='list_supervisors'),
+    path('studentleads/', views.list_studentlead, name='list_student_leads'),
 ]

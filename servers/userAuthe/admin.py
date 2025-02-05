@@ -7,3 +7,4 @@ admin.site.register(StudentMember)
 admin.site.register(StudentLead)
 admin.site.register(Supervisor)
 admin.site.register(Project)
+

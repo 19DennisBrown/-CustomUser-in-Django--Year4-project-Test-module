@@ -175,7 +175,10 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={{ user, authTokens, loginUser, logoutUser, registerUser }}>
-            {loading ? <p>Loading...</p> : children}
+            {loading ? <div className="flex justify-center items-center h-screen">
+                <div className="w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
+        </div>
+         : children}
         </AuthContext.Provider>
     );
 };

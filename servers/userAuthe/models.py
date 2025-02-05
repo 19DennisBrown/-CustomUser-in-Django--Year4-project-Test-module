@@ -13,8 +13,12 @@ class User(AbstractUser):
 
 class Supervisor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    department = models.CharField(max_length=100, blank=True, null=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
+    department = models.CharField(max_length=255, null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.department}"
     class Meta:
         verbose_name = "Supervisor"
 
@@ -29,7 +33,12 @@ class Supervisor(models.Model):
 class StudentLead(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     supervisor = models.ForeignKey(Supervisor, on_delete=models.CASCADE, related_name="students", null=True, blank=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
+    programme = models.CharField(max_length=255, null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.programme}"
     class Meta:
         verbose_name = "Student Lead"
 

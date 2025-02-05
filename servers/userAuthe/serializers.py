@@ -4,6 +4,7 @@ from .models import User, Supervisor, StudentLead, Project, StudentMember
 
 
 
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     role = serializers.ChoiceField(choices=User.ROLE_CHOICES, default='student')
@@ -24,18 +25,76 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 
+# class SupervisorSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Supervisor
+#         fields = '__all__'
+
+
+# class StudentLeadSerializer(serializers.ModelSerializer):
+#     supervisor = SupervisorSerializer(read_only=True)
+
+#     class Meta:
+#         model = StudentLead
+#         fields = '__all__'
+
+
+
+
+# User Serializer (Optional - if you need basic user data)
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role']
+
+# Supervisor Profile Serializer
 class SupervisorSerializer(serializers.ModelSerializer):
+    user = UserRegistrationSerializer(read_only=True)  # Include user details in response
+
     class Meta:
         model = Supervisor
-        fields = '__all__'
+        fields = ['user_id', 'user', 'first_name', 'last_name', 'department']
 
+    def create(self, validated_data):
+        user = self.context['request'].user
+        supervisor = Supervisor.objects.create(user=user, department=validated_data['department'])
+        supervisor_profile = Supervisor.objects.create(
+            supervisor=supervisor,
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            department=validated_data['department']
+        )
+        return supervisor_profile
 
+# Student Lead Profile Serializer
 class StudentLeadSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     supervisor = SupervisorSerializer(read_only=True)
 
     class Meta:
         model = StudentLead
-        fields = '__all__'
+        fields = ['user_id', 'user', 'first_name', 'last_name', 'programme', 'supervisor']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        supervisor = self.context['supervisor']  # Retrieved from view
+
+        # Check if the StudentLead already exists
+        student_lead, created = StudentLead.objects.update_or_create(
+            user=user,  # Unique constraint ensures there's only one per user
+            defaults={
+                "supervisor": supervisor,
+                "first_name": validated_data.get("first_name", ""),
+                "last_name": validated_data.get("last_name", ""),
+                "programme": validated_data.get("programme", ""),
+            },
+        )
+
+        return student_lead
+
+
+
+
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -50,16 +109,3 @@ class StudentMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentMember
         fields = '__all__'
-
-from rest_framework import serializers
-from .models import StudentLead, Supervisor
-
-class SupervisorProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Supervisor
-        fields = ['user', 'department']  # Add any fields that you want to expose in the profile
-
-class StudentLeadProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentLead
-        fields = ['user', 'supervisor']

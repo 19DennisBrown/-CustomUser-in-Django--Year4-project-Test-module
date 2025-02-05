@@ -3,6 +3,7 @@ import AuthContext from '../context/AuthContext'
 import { Link } from 'react-router-dom'
 
 import Header from '../components/Header'
+import ProfileView from './ProfileView'
 
 const HomePage = () => {
     let [students, setStudents] = useState([])
@@ -51,6 +52,7 @@ const HomePage = () => {
                     </li>
                 ))}
             </ul>
+            <ProfileView/>
         </div>
 
     )

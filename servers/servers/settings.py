@@ -18,7 +18,10 @@ SECRET_KEY = 'django-insecure-qqgc)-l#5#lcfhdjxp5j1)ll4x7=q%x3!$=!4plqx=5%60-3_h
 DEBUG = True
 
 ALLOWED_HOSTS = []
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',  # Allow your frontend origin
+]
 
 
 
