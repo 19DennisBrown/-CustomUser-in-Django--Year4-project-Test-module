@@ -202,9 +202,61 @@ def list_supervisors(request):
     supervisors = Supervisor.objects.filter().values("user_id", "first_name", "last_name", "department")
     return JsonResponse(list(supervisors), safe=False)
 
-def list_studentlead(request):
-    supervisors = StudentLead.objects.filter().values("user_id", "first_name", "last_name", "programme")
-    return JsonResponse(list(supervisors), safe=False)
+
+
+
+from rest_framework.generics import RetrieveAPIView
+from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Supervisor, StudentLead
+from .serializers import SupervisorSerializer
+
+class SupervisorStudentDetailView(RetrieveAPIView):
+    queryset = Supervisor.objects.all()
+    serializer_class = SupervisorSerializer
+    lookup_field = "user_id"
+
+    def retrieve(self, request, *args, **kwargs):
+        user_id = self.kwargs.get("user_id")  # Extract user_id from URL
+        
+        try:
+            # Get supervisor by user_id
+            supervisor = Supervisor.objects.get(user_id=user_id)
+            
+            # Get students who selected this supervisor
+            students = StudentLead.objects.filter(supervisor=supervisor)
+            
+            # Serialize supervisor data
+            supervisor_data = SupervisorSerializer(supervisor).data
+            
+            # Create student list
+            student_list = [
+                {
+                    "user_id": student.user.id,
+                    "first_name": student.first_name,
+                    "last_name": student.last_name,
+                    "programme": student.programme
+                }
+                for student in students
+            ]
+            
+            # Combine supervisor details with student list
+            response_data = {
+                "supervisor": supervisor_data,
+                "students": student_list
+            }
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except ObjectDoesNotExist:
+            return Response({"error": "Supervisor not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 # Individual Student data
 from rest_framework.generics import RetrieveAPIView

@@ -33,7 +33,7 @@ urlpatterns = [
 
 
     path('supervisors/', views.list_supervisors, name='list_supervisors'),
-    path('studentleads/', views.list_studentlead, name='list_student_leads'),
+    path('studentleadsupervisor/<int:user_id>/', views.SupervisorStudentDetailView.as_view(), name='list_student_leads'),
 
     # personal data
     path('onestudentlead/<int:user_id>/', views.StudentLeadDetailView.as_view(), name='one_student_leads'),
