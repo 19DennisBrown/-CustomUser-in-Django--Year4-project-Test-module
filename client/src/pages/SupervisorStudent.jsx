@@ -14,7 +14,7 @@ const SupervisorStudent = () => {
     const fetchStudents = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/user/studentleadsupervisor/${user.user_id}/`,
+          `https://project-pms-kyu.vercel.app/user/studentleadsupervisor/${user.user_id}/`,
           {
             headers: {
               Authorization: `Bearer ${authTokens.access}`, // Send token in headers

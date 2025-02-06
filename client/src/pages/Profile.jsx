@@ -19,7 +19,7 @@ const Profile = () => {
     useEffect(() => {
         if (user.role === "student") {
             axios
-                .get("http://127.0.0.1:8000/user/supervisors/", {
+                .get("https://project-pms-kyu.vercel.app/user/supervisors/", {
                     headers: { Authorization: `Bearer ${authTokens.access}` },
                 })
                 .then((response) => {
@@ -63,8 +63,8 @@ const Profile = () => {
         console.log("Submitting profile:", requestData);
 
         const url = user.role === "supervisor"
-            ? "http://127.0.0.1:8000/user/create-profile/supervisor/"
-            : "http://127.0.0.1:8000/user/create-profile/studentlead/";
+            ? "https://project-pms-kyu.vercel.app/user/create-profile/supervisor/"
+            : "https://project-pms-kyu.vercel.app/user/create-profile/studentlead/";
 
         axios
             .post(url, requestData, {
