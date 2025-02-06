@@ -139,35 +139,24 @@ from .serializers import UserSerializer, SupervisorSerializer
 class CreateSupervisorAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Get the incoming user data from the request
-        user_data = request.data
-        user_serializer = UserSerializer(data=user_data)
+        supervisor_data = request.data
         
-        if user_serializer.is_valid():
-            # Create the user (this will automatically create a username)
-            user = user_serializer.save()
+        # Validate and create the user
+        supervisor_serializer = UserSerializer(data=supervisor_data)
+        if supervisor_serializer.is_valid():
+            user = supervisor_serializer.save()
 
-            # Create the supervisor (no need to send username here)
-            supervisor = Supervisor.objects.create(user=user)
+        supervisor_serializer = SupervisorSerializer(
+            data=supervisor_data, context={'request': request}
+        )
 
-            # Create the supervisor profile, use the created user (not the username)
-            supervisor_profile_data = {
-                'supervisor': supervisor,
-                'first_name': user_data['first_name'],
-                'last_name': user_data['last_name'],
-                'department': user_data['department'],
-            }
-
-            # Create and validate the supervisor profile serializer
-            supervisor_profile_serializer = SupervisorSerializer(data=supervisor_profile_data)
-
-            if supervisor_profile_serializer.is_valid():
-                supervisor_profile_serializer.save()
-                return Response({"message": "Supervisor created successfully!"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response(supervisor_profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        # If the user serializer is invalid, return errors
-        return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            # Validate and create the supervisor profile
+        if supervisor_serializer.is_valid():
+            supervisor_serializer.save()
+            return Response({"message": "Supervisor created successfully!"}, status=status.HTTP_201_CREATED)
+    
+    # If the user serializer is invalid, return errors
+        return Response(supervisor_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 from rest_framework.views import APIView
@@ -216,3 +205,17 @@ def list_supervisors(request):
 def list_studentlead(request):
     supervisors = StudentLead.objects.filter().values("user_id", "first_name", "last_name", "programme")
     return JsonResponse(list(supervisors), safe=False)
+
+# Individual Student data
+from rest_framework.generics import RetrieveAPIView
+from .models import StudentLead
+from .serializers import StudentLeadSerializer
+
+class StudentLeadDetailView(RetrieveAPIView):
+    queryset = StudentLead.objects.all()
+    serializer_class = StudentLeadSerializer
+    lookup_field = "user_id"
+class SupervisorDetailView(RetrieveAPIView):
+    queryset = Supervisor.objects.all()
+    serializer_class = SupervisorSerializer
+    lookup_field = "user_id"

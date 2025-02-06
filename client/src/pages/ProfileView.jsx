@@ -72,7 +72,7 @@ const ProfileView = () => {
                 </>
               )}
               <p className="text-gray-600">Username: {user.username}</p>
-              <p className="text-gray-600">Email: {user.email || "N/A"}</p>
+              <p className="text-gray-600">Email: {profile.email || "N/A"}</p>
             </div>
           ))}
         </div>

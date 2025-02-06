@@ -34,4 +34,9 @@ urlpatterns = [
 
     path('supervisors/', views.list_supervisors, name='list_supervisors'),
     path('studentleads/', views.list_studentlead, name='list_student_leads'),
+
+    # personal data
+    path('onestudentlead/<int:user_id>/', views.StudentLeadDetailView.as_view(), name='one_student_leads'),
+    path('onesupervisor/<int:user_id>/', views.SupervisorDetailView.as_view(), name='one_supervisor'),
+
 ]

@@ -3,11 +3,12 @@ import AuthContext from '../context/AuthContext'
 import { Link } from 'react-router-dom'
 
 import Header from '../components/Header'
-import ProfileView from './ProfileView'
+import OneStudentLead from './OneStudentLead'
+import OneSupervisor from './OneSupervisor'
 
 const HomePage = () => {
     let [students, setStudents] = useState([])
-    let {authTokens, logoutUser} = useContext(AuthContext)
+    let {authTokens, logoutUser, user} = useContext(AuthContext)
 
     useEffect(()=> {
         fetchPlans()
@@ -15,7 +16,7 @@ const HomePage = () => {
 
 
     let fetchPlans = async() =>{
-        let response = await fetch('http://127.0.0.1:8000/user/supervisor/students/', {
+        let response = await fetch('http://127.0.0.1:8000/user/studentleads/', {
             method:'GET',
             headers:{
                 'Content-Type':'application/json',
@@ -42,17 +43,17 @@ const HomePage = () => {
                     <Link to='/profile'>Create Profile</Link>
                 </button>
             </div>
-            <ul className="space-y-4">
-                {students.map(student => (
+            <ol className="space-y-4 list-decimal list-inside">
+                {students.map((student) => (
                     <li 
                         key={student.id} 
                         className="p-4 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition"
                     >
-                        {}
+                         {/* {student.first_name} - {student.last_name}. */}
                     </li>
                 ))}
-            </ul>
-            <ProfileView/>
+            </ol>
+          { user.role === "student" ? (<OneStudentLead/>) :   (<OneSupervisor/>)   }
         </div>
 
     )

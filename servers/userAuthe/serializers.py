@@ -46,10 +46,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'role']
+        
 
 # Supervisor Profile Serializer
 class SupervisorSerializer(serializers.ModelSerializer):
-    user = UserRegistrationSerializer(read_only=True)  # Include user details in response
+    user = UserSerializer(read_only=True)  # Include user details in response
 
     class Meta:
         model = Supervisor
@@ -57,14 +58,19 @@ class SupervisorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-        supervisor = Supervisor.objects.create(user=user, department=validated_data['department'])
-        supervisor_profile = Supervisor.objects.create(
-            supervisor=supervisor,
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            department=validated_data['department']
+
+
+        supervisor, created = Supervisor.objects.update_or_create(
+            user=user,
+            defaults={
+                "first_name": validated_data.get("first_name", ""),
+                "last_name": validated_data.get("last_name", ""),
+                "department": validated_data.get("department", ""),
+            },
         )
-        return supervisor_profile
+        return supervisor
+    
+
 
 # Student Lead Profile Serializer
 class StudentLeadSerializer(serializers.ModelSerializer):

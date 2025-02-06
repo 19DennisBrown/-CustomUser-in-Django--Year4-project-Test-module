@@ -74,7 +74,7 @@ const Profile = () => {
                 },
             })
             .then(() => {
-                alert("Profile created successfully!");
+                // alert("Profile created successfully!");
                 navigate("/");
             })
             .catch((error) => {
@@ -82,7 +82,7 @@ const Profile = () => {
                     "Error creating profile:",
                     error.response ? error.response.data : error
                 );
-                alert(
+                console.log(
                     `Error: ${
                         error.response
                             ? JSON.stringify(error.response.data)
