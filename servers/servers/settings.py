@@ -23,7 +23,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '127.0.0.1', 'localhost']
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',  # Allow your frontend origin
+    'http://localhost:5173', 'https://project-pms-kyu.netlify.app'  # Allow your frontend origin
 ]
 
 
