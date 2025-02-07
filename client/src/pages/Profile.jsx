@@ -1,50 +1,33 @@
-import { useContext, useState, useEffect } from "react";
+
+
+
+
+
+
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import axios from "axios";
 
-const Profile = () => {
-    const { authTokens, user } = useContext(AuthContext);
-    const [profile, setProfile] = useState({
-        first_name: "",
-        last_name: "",
-        department: "", // For Supervisor
-        programme: "", // For Student Lead
-        supervisor: "", // For Student Lead (stores ID)
+const ProjectCreation = () => {
+    const { authTokens } = useContext(AuthContext);
+    const [project, setProject] = useState({
+        title: "",
+        description: ""
     });
-    const [supervisors, setSupervisors] = useState([]); // Store fetched supervisors
     const navigate = useNavigate();
-
-    // Fetch supervisors when user is a student
-    useEffect(() => {
-        if (user.role === "student") {
-            axios
-                .get("https://project-pms-kyu.vercel.app/user/supervisors/", {
-                    headers: { Authorization: `Bearer ${authTokens.access}` },
-                })
-                .then((response) => {
-                    setSupervisors(response.data);
-                    console.log("Fetched supervisors:", response.data);
-                })
-                .catch((error) => {
-                    console.error("Error fetching supervisors:", error);
-                });
-        }
-    }, [user.role, authTokens]);
 
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
-        console.log(`Field: ${name}, Value: ${value}`); // Debugging: See if the event fires correctly
-
-        setProfile((prev) => ({
+        setProject((prev) => ({
             ...prev,
-            [name]: name === "supervisor" ? value : value, // Keep `value` as a string for `<select>`
+            [name]: value
         }));
     };
 
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!authTokens) {
@@ -53,153 +36,64 @@ const Profile = () => {
         }
 
         const requestData = {
-            first_name: profile.first_name,
-            last_name: profile.last_name,
-            ...(user.role === "supervisor"
-                ? { department: profile.department }
-                : { programme: profile.programme, supervisor: profile.supervisor }),
+            title: project.title,
+            description: project.description
         };
 
-        console.log("Submitting profile:", requestData);
-
-        const url = user.role === "supervisor"
-            ? "https://project-pms-kyu.vercel.app/user/create-profile/supervisor/"
-            : "https://project-pms-kyu.vercel.app/user/create-profile/studentlead/";
-
-        axios
-            .post(url, requestData, {
+        try {
+            await axios.post("http://127.0.0.1:8000/user/create_project/", requestData, {
                 headers: {
                     Authorization: `Bearer ${authTokens.access}`,
-                    "Content-Type": "application/json",
-                },
-            })
-            .then(() => {
-                // alert("Profile created successfully!");
-                navigate("/");
-            })
-            .catch((error) => {
-                console.error(
-                    "Error creating profile:",
-                    error.response ? error.response.data : error
-                );
-                console.log(
-                    `Error: ${
-                        error.response
-                            ? JSON.stringify(error.response.data)
-                            : "Unknown error"
-                    }`
-                );
+                    "Content-Type": "application/json"
+                }
             });
+            navigate("/");
+        } catch (error) {
+            console.error("Error creating project:", error.response ? error.response.data : error);
+        }
     };
 
     const handleCancel = () => navigate("/");
 
     return (
         <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center">Create Your Profile</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Create a Project</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {/* First Name */}
                 <div className="flex flex-col">
-                    <label className="text-sm font-semibold text-gray-700" htmlFor="first_name">
-                        First Name:
+                    <label className="text-sm font-semibold text-gray-700" htmlFor="title">
+                        Project Title:
                     </label>
                     <input
                         type="text"
-                        name="first_name"
-                        value={profile.first_name}
+                        name="title"
+                        value={project.title}
                         onChange={handleChange}
-                        id="first_name"
+                        id="title"
                         className="mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                         required
                     />
                 </div>
 
-                {/* Last Name */}
                 <div className="flex flex-col">
-                    <label className="text-sm font-semibold text-gray-700" htmlFor="last_name">
-                        Last Name:
+                    <label className="text-sm font-semibold text-gray-700" htmlFor="description">
+                        Description:
                     </label>
-                    <input
-                        type="text"
-                        name="last_name"
-                        value={profile.last_name}
+                    <textarea
+                        name="description"
+                        value={project.description}
                         onChange={handleChange}
-                        id="last_name"
+                        id="description"
                         className="mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                         required
                     />
                 </div>
 
-                {/* Supervisor Role - Department Input */}
-                {user.role === "supervisor" && (
-                    <div className="flex flex-col">
-                        <label className="text-sm font-semibold text-gray-700" htmlFor="department">
-                            Department:
-                        </label>
-                        <input
-                            type="text"
-                            name="department"
-                            value={profile.department}
-                            onChange={handleChange}
-                            id="department"
-                            className="mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                )}
-
-                {/* Student Role - Programme & Supervisor Select */}
-                {user.role === "student" && (
-                    <>
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700" htmlFor="programme">
-                                Programme:
-                            </label>
-                            <input
-                                type="text"
-                                name="programme"
-                                value={profile.programme}
-                                onChange={handleChange}
-                                id="programme"
-                                className="mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        <div className="flex flex-col">
-                            <label className="text-sm font-semibold text-gray-700" htmlFor="supervisor">
-                                Supervisor:
-                            </label>
-                            <select
-                                name="supervisor"
-                                value={profile.supervisor}
-                                onChange={handleChange}
-                                id="supervisor"
-                                className="mt-2 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="">Select a Supervisor</option>
-                                {supervisors?.length > 0 ? (
-                                    supervisors.map((sup) => (
-                                        <option key={sup.user_id} value={sup.user_id}>
-                                            {sup.first_name} {sup.last_name} - {sup.department}
-                                        </option>
-                                    ))
-                                ) : (
-                                    <option disabled>No supervisors available</option>
-                                )}
-                            </select>
-                        </div>
-                    </>
-                )}
-
-                {/* Buttons */}
                 <div className="flex space-x-4">
                     <button
                         type="submit"
                         className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                     >
-                        Create Profile
+                        Create Project
                     </button>
                     <button
                         type="button"
@@ -214,4 +108,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default ProjectCreation;

@@ -6,6 +6,8 @@ import Header from '../components/Header'
 import OneStudentLead from './OneStudentLead'
 import OneSupervisor from './OneSupervisor'
 import SupervisorStudent from './SupervisorStudent'
+import ViewProject from './ViewProject'
+import ViewMembers from './ViewMembers'
 
 const HomePage = () => {
     let { user} = useContext(AuthContext)
@@ -27,9 +29,36 @@ const HomePage = () => {
           { user.role === "student" ? (<OneStudentLead/>) :   (<OneSupervisor/>)   }
           {user.role === 'supervisor' ? (<SupervisorStudent supervisorId={user.supervisorId} />)
            : 
-           (<div>You do not have permission to view the student list.</div>  )
-           }
+           (<div></div>  )}
+
+
+          {user.role === 'student' ? (<div>
+                <Link to="/create_project">Create Project</Link>
+          </div>)
+           : 
+           (<div></div>  )
+        }
+
+
+        {user.role === 'student' ? (<ViewProject supervisorId={user.supervisorId} />)
+         : 
+         (<div></div>  )}
+
+
+
+        {user.role === 'student' ? (<div>
+                        <Link to="/add_member">Add Project Members</Link>
+          </div>)
+           : 
+           (<div></div>  )
+        }
+
+        {user.role === 'student' ? (<ViewMembers supervisorId={user.supervisorId} />)
+         : 
+         (<div></div>  )}
+        
         </div>
+        
 
     )
 }

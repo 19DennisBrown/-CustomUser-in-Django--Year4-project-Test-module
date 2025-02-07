@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-     'userAuthe',  #app
+     'userAuthe', 
+      'conversation', #app
 
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
@@ -135,7 +136,7 @@ WSGI_APPLICATION = 'servers.wsgi.application'
 #     }
 # }
 
-# # superbase
+# superbase
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

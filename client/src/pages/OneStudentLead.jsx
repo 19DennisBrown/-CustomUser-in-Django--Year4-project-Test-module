@@ -17,7 +17,7 @@ const ProfileView = () => {
     }
 
     // Fetch student profile data for the logged-in user
-    const url = `https://project-pms-kyu.vercel.app/user/onestudentlead/${user.user_id}/`; // Use the logged-in user's ID
+    const url = `http://127.0.0.1:8000/user/onestudentlead/${user.user_id}/`; // Use the logged-in user's ID
     axios
       .get(url, {
         headers: { Authorization: `Bearer ${authTokens.access}` },
@@ -70,11 +70,12 @@ const ProfileView = () => {
               : "N/A"}
           </p>
           <p className="text-gray-600">Username: {user.username}</p>
-          <p className="text-gray-600">Email: {profileData.email || "N/A"}</p>
+          <p className="text-gray-600">Email: {profileData.user.email || "N/A"}</p>
         </div>
       ) : (
-        <p className="text-center text-gray-500">No profile data available or data is incomplete.</p>
+        <p className="text-center text-gray-500"> </p>
       )}
+
     </div>
   );
 };

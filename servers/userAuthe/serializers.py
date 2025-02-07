@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import User, Supervisor, StudentLead, Project, StudentMember
+from .models import User, Supervisor, StudentLead, StudentProject, ProjectMembers
 
 
 
@@ -22,21 +22,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-
-
-
-# class SupervisorSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Supervisor
-#         fields = '__all__'
-
-
-# class StudentLeadSerializer(serializers.ModelSerializer):
-#     supervisor = SupervisorSerializer(read_only=True)
-
-#     class Meta:
-#         model = StudentLead
-#         fields = '__all__'
 
 
 
@@ -103,15 +88,40 @@ class StudentLeadSerializer(serializers.ModelSerializer):
 
 
 
+
+
 class ProjectSerializer(serializers.ModelSerializer):
-    members = serializers.StringRelatedField(many=True)
-
+    user = UserSerializer(read_only=True)  # Include user details in response
     class Meta:
-        model = Project
-        fields = '__all__'
+        model = StudentProject
+        fields = ['user_id','user', 'title', 'description']
 
+    def create(self, validated_data):
+        user = self.context['request'].user
+
+        project, created = StudentProject.objects.update_or_create(
+            user=user,
+            defaults={
+                "title": validated_data.get("title", ""),
+                "description": validated_data.get("description", ""),
+            },
+        )
+        return project
 
 class StudentMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)  # Include user details in response
     class Meta:
-        model = StudentMember
-        fields = '__all__'
+        model = ProjectMembers
+        fields = ['user_id', 'user', 'first_name', 'last_name']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+
+        student_member, created = ProjectMembers.objects.update_or_create(
+            user=user,
+            defaults={
+                "first_name": validated_data.get("first_name", ""),
+                "last_name": validated_data.get("last_name", ""),
+            },
+        )
+        return student_member

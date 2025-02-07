@@ -271,3 +271,130 @@ class SupervisorDetailView(RetrieveAPIView):
     queryset = Supervisor.objects.all()
     serializer_class = SupervisorSerializer
     lookup_field = "user_id"
+
+
+
+
+
+# PROJECT AND STUDENT MEMBERS.
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import UserSerializer, ProjectSerializer, StudentMemberSerializer
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_project(request):
+    project_data = request.data
+
+    # Validate and create user
+    user_serializer = UserSerializer(data=project_data)
+    if user_serializer.is_valid():
+        user_serializer.save()
+    
+    # Validate and create project
+    project_serializer = ProjectSerializer(data=project_data, context={'request': request})
+    if project_serializer.is_valid():
+        project_serializer.save()
+        return Response({"message": "Project created successfully"}, status=status.HTTP_201_CREATED)
+    
+    # Return errors if validation fails
+    return Response(project_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.generics import RetrieveAPIView
+from .models import StudentProject, StudentLead,ProjectMembers
+from .serializers import ProjectSerializer, StudentLeadSerializer
+
+class ProjectStudentDetailView(RetrieveAPIView):
+    queryset = StudentLead.objects.all()
+    serializer_class = StudentLeadSerializer
+    lookup_field = "user_id"
+
+    def retrieve(self, request, *args, **kwargs):
+        user_id = self.kwargs.get("user_id")  # Extract user_id from URL
+
+        try:
+            # Get student lead by user_id
+            student_lead = StudentLead.objects.get(user_id=user_id)
+            
+            # Get project created by this student
+            project = StudentProject.objects.filter(user_id=user_id)
+
+            # Serialize project data
+            project_data = ProjectSerializer(project, many=True).data
+
+            # Combine student lead details with project list
+            response_data = {
+                "student_lead": StudentLeadSerializer(student_lead).data,
+                "projects": project_data
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except ObjectDoesNotExist:
+            return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+# PROJECT MEMBERS
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def Add_project_Members(request):
+    project_data = request.data
+
+    # Validate and create user
+    user_serializer = UserSerializer(data=project_data)
+    if user_serializer.is_valid():
+        user_serializer.save()
+
+    # Validate and Add members
+    project_members_serializer = StudentMemberSerializer(data=project_data, context={'request': request})
+    if project_members_serializer.is_valid():
+        project_members_serializer.save()
+        return Response({"message": "Project created successfully"}, status=status.HTTP_201_CREATED)
+    
+    # Return errors if validation fails
+    return Response(project_members_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.generics import RetrieveAPIView
+from .models import StudentLead, ProjectMembers
+from .serializers import StudentLeadSerializer, StudentMemberSerializer
+
+class MemberStudentDetailView(RetrieveAPIView):
+    queryset = StudentLead.objects.all()
+    serializer_class = StudentLeadSerializer
+    lookup_field = "user_id"
+
+    def retrieve(self, request, *args, **kwargs):
+        user_id = self.kwargs.get("user_id")  # Extract user_id from URL
+
+        # Get student lead object or return 404
+        student_lead = get_object_or_404(StudentLead, user_id=user_id)
+
+        # Get members associated with the student's project
+        members = ProjectMembers.objects.filter(user__id=user_id)
+
+        # Serialize data
+        member_data = StudentMemberSerializer(members, many=True).data
+        student_data = StudentLeadSerializer(student_lead).data
+
+        # Prepare response
+        response_data = {
+            "student_lead": student_data,
+            "members": member_data if members else [],
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)

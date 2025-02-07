@@ -17,7 +17,7 @@ const OneSupervisor = () => {
     }
 
     // Fetch supervisor profile data for the logged-in user
-    const url = `https://project-pms-kyu.vercel.app/user/onesupervisor/${user.user_id}/`; // Use the logged-in user's ID
+    const url = `http://127.0.0.1:8000/user/onesupervisor/${user.user_id}/`; // Use the logged-in user's ID
     axios
       .get(url, {
         headers: { Authorization: `Bearer ${authTokens.access}` },
@@ -64,7 +64,7 @@ const OneSupervisor = () => {
           </h3>
           <p className="text-gray-600">Department: {profileData.department || "N/A"}</p>
           <p className="text-gray-600">Username: {user.username}</p>
-          <p className="text-gray-600">Email: {profileData.email || "N/A"}</p>
+          <p className="text-gray-600">Email: {profileData.user.email || "N/A"}</p>
         </div>
       ) : (
         <p className="text-center text-gray-500">No profile data available or data is incomplete.</p>
