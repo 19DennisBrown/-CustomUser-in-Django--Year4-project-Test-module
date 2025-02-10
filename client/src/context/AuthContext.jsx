@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(jwtDecode(loginData.access));
                 localStorage.setItem('authTokens', JSON.stringify(loginData));
                 localStorage.setItem('userRole', loginData.role);
-                navigate('/'); // Navigate after successful login
+                navigate('/home'); // Navigate after successful login
             } else {
                 errorMessage = 'Login failed after registration';
             }
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }) => {
             setUser(jwtDecode(data.access));
             localStorage.setItem('authTokens', JSON.stringify(data)); // Store tokens in localStorage
             localStorage.setItem('userRole', data.role); // Store role in localStorage
-            navigate('/');
+            navigate('/home');
         } else {
             setError('Invalid username or password');
         }
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('authTokens');
         localStorage.removeItem('userRole');
         setLoading(false);
-        navigate('/login');
+        navigate('/');
     };
 
     // Update token

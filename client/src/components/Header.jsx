@@ -12,13 +12,14 @@ const Header = () => {
         if (!user) {
             localStorage.removeItem('userRole');
             setRole()
+            console.log(role)
         }
     }, [user]);
 
     const handleLogout = () => {
         logoutUser();
         localStorage.removeItem('userRole'); // Remove role from localStorage
-        navigate('/login'); // Redirect to login page after logout
+        navigate('/'); // Redirect to landing page after logout
     };
 
     // If the user is not logged in, don't render the header
@@ -27,8 +28,8 @@ const Header = () => {
     }
 
     return (
-        <div className="flex items-center gap-4 p-4 bg-gray-100 shadow-md">
-            <Link to="/" className="text-blue-500 hover:underline font-semibold">Home</Link>
+        <div className="flex items-center gap-4 p-4 mb-12 bg-gray-100 shadow-md">
+            <Link to="/home" className="text-blue-500 hover:underline font-semibold">Home</Link>
             <span className="text-gray-500">|</span>
 
             <p
@@ -38,8 +39,8 @@ const Header = () => {
                 Logout
             </p>
 
-            <p className="text-gray-700 font-medium">Hello, {user.username} </p> <br />
-            <p className="text-green-500 font-semibold text-lg mt-2">Your Role is: [{user.role}]</p>
+            <p className="text-gray-700 font-medium hidden sm:block">Hello, {user.username} </p> <br />
+            <p className="text-green-500 font-semibold text-lg mt-2 hidden sm:block">Your Role is: [{user.role}]</p>
 
         </div>
     );

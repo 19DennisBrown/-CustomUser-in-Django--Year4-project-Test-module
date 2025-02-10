@@ -212,6 +212,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Supervisor, StudentLead
 from .serializers import SupervisorSerializer
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Supervisor, StudentLead, StudentProject
+from .serializers import SupervisorSerializer, StudentLeadSerializer, ProjectSerializer
 
 class SupervisorStudentDetailView(RetrieveAPIView):
     queryset = Supervisor.objects.all()
@@ -220,7 +226,7 @@ class SupervisorStudentDetailView(RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         user_id = self.kwargs.get("user_id")  # Extract user_id from URL
-        
+
         try:
             # Get supervisor by user_id
             supervisor = Supervisor.objects.get(user_id=user_id)
@@ -231,16 +237,19 @@ class SupervisorStudentDetailView(RetrieveAPIView):
             # Serialize supervisor data
             supervisor_data = SupervisorSerializer(supervisor).data
             
-            # Create student list
-            student_list = [
-                {
+            # Create student list with projects
+            student_list = []
+            for student in students:
+                student_projects = StudentProject.objects.filter(user=student.user)
+                project_data = ProjectSerializer(student_projects, many=True).data
+                
+                student_list.append({
                     "user_id": student.user.id,
                     "first_name": student.first_name,
                     "last_name": student.last_name,
-                    "programme": student.programme
-                }
-                for student in students
-            ]
+                    "programme": student.programme,
+                    "projects": project_data
+                })
             
             # Combine supervisor details with student list
             response_data = {
@@ -262,11 +271,49 @@ class SupervisorStudentDetailView(RetrieveAPIView):
 from rest_framework.generics import RetrieveAPIView
 from .models import StudentLead
 from .serializers import StudentLeadSerializer
+from .serializers import UserSerializer, ProjectSerializer, StudentMemberSerializer
 
 class StudentLeadDetailView(RetrieveAPIView):
     queryset = StudentLead.objects.all()
     serializer_class = StudentLeadSerializer
     lookup_field = "user_id"
+
+    def retrieve(self, request, *args, **kwargs):
+        user_id = self.kwargs.get("user_id")  # Extract user_id from URL
+
+        try:
+            # Get student lead by user_id
+            student_lead = StudentLead.objects.get(user_id=user_id)
+            
+            # Get project created by this student
+            project = StudentProject.objects.filter(user_id=user_id)
+            # Serialize project data
+            project_data = ProjectSerializer(project, many=True).data
+
+            # Get members created by this student
+            member = ProjectMembers.objects.filter(user_id=user_id)
+            # serialize the data
+            member_data = StudentMemberSerializer(member, many=True).data
+
+
+            # Combine student lead details with project list
+            response_data = {
+                "student_lead": StudentLeadSerializer(student_lead).data,
+                "projects": project_data,
+                "members": member_data
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except ObjectDoesNotExist:
+            return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
 class SupervisorDetailView(RetrieveAPIView):
     queryset = Supervisor.objects.all()
     serializer_class = SupervisorSerializer

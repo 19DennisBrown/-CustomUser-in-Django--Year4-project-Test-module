@@ -57,31 +57,7 @@ class SupervisorSerializer(serializers.ModelSerializer):
     
 
 
-# Student Lead Profile Serializer
-class StudentLeadSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    supervisor = SupervisorSerializer(read_only=True)
-
-    class Meta:
-        model = StudentLead
-        fields = ['user_id', 'user', 'first_name', 'last_name', 'programme', 'supervisor']
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        supervisor = self.context['supervisor']  # Retrieved from view
-
-        # Check if the StudentLead already exists
-        student_lead, created = StudentLead.objects.update_or_create(
-            user=user,  # Unique constraint ensures there's only one per user
-            defaults={
-                "supervisor": supervisor,
-                "first_name": validated_data.get("first_name", ""),
-                "last_name": validated_data.get("last_name", ""),
-                "programme": validated_data.get("programme", ""),
-            },
-        )
-
-        return student_lead
+#
 
 
 
@@ -125,3 +101,35 @@ class StudentMemberSerializer(serializers.ModelSerializer):
             },
         )
         return student_member
+
+
+
+
+
+        #  Student Lead Profile Serializer
+class StudentLeadSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    supervisor = SupervisorSerializer(read_only=True)
+    project = ProjectSerializer(read_only=True)
+
+    class Meta:
+        model = StudentLead
+        fields = ['user_id', 'user', 'first_name', 'last_name', 'programme', 'supervisor', 'project']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        supervisor = self.context['supervisor']  # Retrieved from view
+        project = self.context['project']  # Retrieved from view
+
+        # Check if the StudentLead already exists
+        student_lead, created = StudentLead.objects.update_or_create(
+            user=user,  # Unique constraint ensures there's only one per user
+            defaults={
+                "supervisor": supervisor,
+                "first_name": validated_data.get("first_name", ""),
+                "last_name": validated_data.get("last_name", ""),
+                "programme": validated_data.get("programme", ""),
+            },
+        )
+
+        return student_lead

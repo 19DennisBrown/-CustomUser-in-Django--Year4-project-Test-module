@@ -33,7 +33,7 @@ const CreateProject = () => {
     })
     .then(() => {
         alert("Profile created successfully!");
-        navigate("/");
+        navigate("/home");
     })
     .catch((error) => {
         console.error(

@@ -54,17 +54,26 @@ const OneSupervisor = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold mb-6 text-center">Supervisor Information</h2>
+    <div className="w-full mx-auto p-2 bg-white rounded-lg shadow-lg">
+      <h2 className="text-md sm:text-3xl font-semibold mb-6 text-center text-green-600">Supervisor Information</h2>
 
       {profileData ? (
-        <div className="p-4 border border-gray-300 rounded-md hover:shadow-lg">
-          <h3 className="text-xl font-semibold">
+        <div className="p-4 border border-gray-300 rounded-md text-center ">
+          <h3 className="text-xl font-semibold my-4">
             {profileData.first_name || "No first name"} {profileData.last_name || "No last name"}
           </h3>
-          <p className="text-gray-600">Department: {profileData.department || "N/A"}</p>
-          <p className="text-gray-600">Username: {user.username}</p>
-          <p className="text-gray-600">Email: {profileData.user.email || "N/A"}</p>
+          
+          <section className="grid sm:grid-cols-2 grid-cols-1 gap-4 my-4">
+              <p className="text-gray-600 border-2 font-semibold px-4 py-2 rounded-md border-green-600  ">Department: {profileData.department || "N/A"}</p>
+              <p className="text-gray-600 border-2 font-semibold px-4 py-2 rounded-md border-green-600">Username: {user.username}</p>
+          </section>
+
+          <fieldset className="border-2 border-green-600 p-4 rounded-lg">
+              <legend className="text-lg font-semibold text-gray-700 px-2">
+                Email: 
+              </legend>
+                 <p className="text-black font-semibold">{profileData.user.email || "N/A"}</p>                
+          </fieldset>
         </div>
       ) : (
         <p className="text-center text-gray-500">No profile data available or data is incomplete.</p>

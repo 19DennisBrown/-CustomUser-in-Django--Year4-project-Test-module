@@ -54,23 +54,26 @@ const ProfileView = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold mb-6 text-center">Personal Information</h2>
+    <div className="w-full mx-auto p-2 sm:p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-3xl font-semibold mb-6 text-center text-green-600">Student Lead Information</h2>
 
       {profileData ? (
-        <div className="p-4 border border-gray-300 rounded-md hover:shadow-lg">
+        <div className="p-4  rounded-md  text-center">
           <h3 className="text-xl font-semibold">
             {profileData.first_name || "No first name"} {profileData.last_name || "No last name"}
           </h3>
-          <p className="text-gray-600">Programme: {profileData.programme || "N/A"}</p>
-          <p className="text-gray-600">
-            Supervisor:{" "}
-            {profileData.supervisor
-              ? `${profileData.supervisor.first_name} ${profileData.supervisor.last_name}`
-              : "N/A"}
-          </p>
-          <p className="text-gray-600">Username: {user.username}</p>
-          <p className="text-gray-600">Email: {profileData.user.email || "N/A"}</p>
+
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+            <p className="text-gray-900  border border-green-300 p-2"><span className="font-semibold">Programme</span>: {profileData.programme || "N/A"}</p>
+            <p className="text-gray-900  border border-green-300 p-2">
+            <span className="font-semibold">Supervisor</span>:{" "}
+              {profileData.supervisor
+                ? `${profileData.supervisor.first_name} ${profileData.supervisor.last_name}`
+                : "N/A"}
+            </p>
+          </section>
+          <p className="text-gray-600 my-4"><span className="font-semibold">Username</span>: {user.username}</p>
+          <p className="text-gray-600"><span className="font-semibold">Gmail</span>: {profileData.user.email || "N/A"}</p>
         </div>
       ) : (
         <p className="text-center text-gray-500"> </p>

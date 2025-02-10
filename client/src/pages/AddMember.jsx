@@ -43,8 +43,8 @@ const AddMember = () => {
                 },
             });
 
-            alert("Member added successfully!");
-            navigate("/"); // Redirect after success
+            // alert("Member added successfully!");
+            navigate("/home"); // Redirect after success
         } catch (err) {
             setError(err.response ? err.response.data : "An error occurred");
         } finally {
@@ -54,7 +54,7 @@ const AddMember = () => {
 
     return (
         <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center">{"Add Project Member(s)"}</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">{"model"}</h2>
 
             {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 

@@ -44,28 +44,26 @@ const ViewMembers = () => {
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">Student Lead and Project Members</h2>
+    <div className="max-w-3xl mx-auto p-6 bg-white  rounded-lg">
+      <h2 className="text-xl font-bold mb-4 text-center">Project Collaborative Members</h2>
 
       {/* Display student lead details */}
       <div className="mb-6">
-        <h3 className="text-xl font-semibold">Student Lead:</h3>
-        <p><strong>Name:</strong> {data.student_lead.first_name} {data.student_lead.last_name}</p>
-        <p><strong>Email:</strong> {data.student_lead.user.email}</p>
-        <p><strong>Description:</strong> {data.student_lead.description || 'No description available'}</p>
+        {/* <h3 className="text-xl font-semibold">Student Lead:</h3>
+        <p><strong>Name:</strong> {data.student_lead.first_name} {data.student_lead.last_name}</p> */}
+        {/* <p><strong>Email:</strong> {data.student_lead.user.email}</p> */}
       </div>
 
       {/* Display project members */}
-      <h3 className="text-xl font-semibold">Project Members:</h3>
       {data.members && data.members.length > 0 ? (
-        <ul className="list-none">
+        <ol className="list-none">
           {data.members.map((member) => (
             <li key={member.user_id} className="border p-4 my-2 rounded-lg">
               <p><strong>Name:</strong> {member.first_name} {member.last_name}</p>
               <p><strong>Email:</strong> {member.user.email}</p>
             </li>
           ))}
-        </ul>
+        </ol>
       ) : (
         <p className="text-gray-600">No project members found</p>
       )}

@@ -1,91 +1,110 @@
-
-
-
-from rest_framework import status, permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from conversation.models import Conversation, ConversationMessage
+from userAuthe.models import StudentProject, User
 from conversation.serializers import ConversationSerializer, ConversationMessageSerializer
-from userAuthe.models import Project
 
-@api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-def conversation_list(request):
-    if request.method == 'GET':
-        conversations = Conversation.objects.all()
-        serializer = ConversationSerializer(conversations, many=True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        project_id = request.data.get('project')
-        project = Project.objects.get(id=project_id)
-        serializer = ConversationSerializer(data=request.data)
-        if serializer.is_valid():
-            conversation = serializer.save(project=project)
-            conversation.members.add(request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def start_conversation(request):
+    """
+    Start a conversation between a Student Lead and Supervisor.
+    """
+    user = request.user  
+    project_id = request.data.get("project_id")
 
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
-def conversation_detail(request, pk):
+    if not project_id:
+        return Response({"error": "Project ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        conversation = Conversation.objects.get(pk=pk)
-    except Conversation.DoesNotExist:
-        return Response({'error': 'Conversation not found'}, status=status.HTTP_404_NOT_FOUND)
-    
-    if request.method == 'GET':
-        serializer = ConversationSerializer(conversation)
-        return Response(serializer.data)
-    
-    elif request.method == 'PUT':
-        serializer = ConversationSerializer(conversation, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    elif request.method == 'DELETE':
-        conversation.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        project = StudentProject.objects.get(id=project_id)
+    except StudentProject.DoesNotExist:
+        return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticated])
-def conversation_message_list(request):
-    if request.method == 'GET':
-        conversation_id = request.query_params.get('conversation', None)
-        messages = ConversationMessage.objects.filter(conversation_id=conversation_id) if conversation_id else ConversationMessage.objects.all()
-        serializer = ConversationMessageSerializer(messages, many=True)
-        return Response(serializer.data)
+    # Ensure the user is part of the project (Student Lead or Supervisor)
+    if project.user != user and project.supervisor.user != user:
+        return Response({"error": "You are not authorized to start this conversation"}, status=status.HTTP_403_FORBIDDEN)
+
+    # Get or create conversation
+    conversation, created = Conversation.objects.get_or_create(project=project)
     
-    elif request.method == 'POST':
-        conversation_id = request.data.get('conversation')
+    # Ensure both members (Student Lead & Supervisor) are part of the conversation
+    conversation.members.add(project.user, project.supervisor.user)
+
+    serializer = ConversationSerializer(conversation)
+    return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_message(request):
+    """
+    Send a message in an existing conversation.
+    """
+    user = request.user  
+    conversation_id = request.data.get("conversation_id")
+    content = request.data.get("content")
+
+    if not conversation_id or not content:
+        return Response({"error": "Conversation ID and content are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
         conversation = Conversation.objects.get(id=conversation_id)
-        serializer = ConversationMessageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(conversation=conversation, created_by=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Conversation.DoesNotExist:
+        return Response({"error": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
-def conversation_message_detail(request, pk):
+    # Ensure the user is part of the conversation
+    if user not in conversation.members.all():
+        return Response({"error": "You are not part of this conversation"}, status=status.HTTP_403_FORBIDDEN)
+
+    # Create message
+    message = ConversationMessage.objects.create(
+        conversation=conversation,
+        content=content,
+        created_by=user
+    )
+
+    serializer = ConversationMessageSerializer(message)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_conversation_messages(request, conversation_id):
+    """
+    Retrieve all messages in a conversation.
+    """
+    user = request.user  
+
     try:
-        message = ConversationMessage.objects.get(pk=pk)
-    except ConversationMessage.DoesNotExist:
-        return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+        conversation = Conversation.objects.get(id=conversation_id)
+    except Conversation.DoesNotExist:
+        return Response({"error": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Ensure the user is part of the conversation
+    if user not in conversation.members.all():
+        return Response({"error": "You are not part of this conversation"}, status=status.HTTP_403_FORBIDDEN)
+
+    # Get all messages
+    messages = conversation.messages.all().order_by("created_at")
+    serializer = ConversationMessageSerializer(messages, many=True)
     
-    if request.method == 'GET':
-        serializer = ConversationMessageSerializer(message)
-        return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_user_conversations(request):
+    """
+    List all conversations where the user is a member.
+    """
+    user = request.user  
+    conversations = Conversation.objects.filter(members=user)
+    serializer = ConversationSerializer(conversations, many=True)
     
-    elif request.method == 'PUT':
-        serializer = ConversationMessageSerializer(message, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    elif request.method == 'DELETE':
-        message.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.data, status=status.HTTP_200_OK)

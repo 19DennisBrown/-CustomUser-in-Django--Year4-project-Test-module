@@ -46,33 +46,34 @@ const RegisterPage = () => {
             {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username[0]}</p>}
           </div>
 
-          <div>
-            <label htmlFor="email" className="block text-gray-700 font-medium">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>}
-          </div>
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="email" className="block text-gray-700 font-medium">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>}
+              </div>
 
-          <div>
-            <label htmlFor="role" className="block text-gray-700 font-medium">
-              Role
-            </label>
-            <select
-              name="role"
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="student">Student</option>
-              <option value="supervisor">Supervisor</option>
-            </select>
-          </div>
-
+              <div>
+                <label htmlFor="role" className="block text-gray-700 font-medium">
+                  Role
+                </label>
+                <select
+                  name="role"
+                  required
+                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="student">Student</option>
+                  <option value="supervisor">Supervisor</option>
+                </select>
+              </div>
+          </section>
 
           <div>
             <label htmlFor="password" className="block text-gray-700 font-medium">
@@ -104,7 +105,7 @@ const RegisterPage = () => {
 
         <div className="mt-4 text-center text-gray-700">
           Already registered?{" "}
-          <Link to="/login" className="text-blue-500 font-semibold hover:underline">
+          <Link to="/" className="text-blue-500 font-semibold hover:underline">
             Login
           </Link>
         </div>
