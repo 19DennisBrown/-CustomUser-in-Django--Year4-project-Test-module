@@ -55,7 +55,6 @@ const ViewProject = () => {
                         </div>
                     ))}
 
-        r
 
 
                     <ViewMembers supervisorId={user.supervisorId} />

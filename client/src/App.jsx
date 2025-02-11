@@ -14,6 +14,9 @@ import ViewProject from './pages/ViewProject/ViewProject';
 import AddMember from './pages/AddMember';
 import StudentLeadForSupervisor from './pages/StudentLead/OneStudentLeadForSupervisor';
 import LandingPage from './components/LandingPage/LandingPage';
+import Blog from './components/LandingPage/Blog';
+import Services from './components/LandingPage/Services';
+import About from './components/LandingPage/About';
 
 function App() {
   return (
@@ -35,6 +38,11 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<LandingPage />} />
+
+            {/* landing page */}
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </AuthProvider>
       </Router>

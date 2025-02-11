@@ -24,9 +24,9 @@ const Navbar
   // Array containing navigation items
   const navItems = [
     { id: 1, text: 'Home', link: '/' },
-    { id: 2, text: 'Blog', link: '/repo' },
-    { id: 3, text: 'Services', link: '/' },
-    { id: 4, text: 'About', link: '/' },
+    { id: 2, text: 'Blog', link: '/blog' },
+    { id: 3, text: 'Services', link: '/services' },
+    { id: 4, text: 'About', link: '/about' },
   ];
 
   return (

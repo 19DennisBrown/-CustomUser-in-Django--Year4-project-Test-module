@@ -34,58 +34,60 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-gray-700 font-medium">
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username[0]}</p>}
+            <fieldset className="border-2 border-green-600 rounded-md text-center ">
+                <legend className="px-2 text-xl font-semibold">Registeration-/Unique Code</legend>
+                  <input
+                    type="text"
+                    name="username"
+                    required
+                    placeholder="CT101-G-100-12"
+                    className="w-full py-1 px-3 pb-2 mt-2 text-green-500 font-semibold  border-gray-300 rounded-md focus:outline-none"
+                  />
+              </fieldset>
+              {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username[0]}</p>}
           </div>
 
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="email" className="block text-gray-700 font-medium">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>}
+                  <fieldset className="border-2 border-green-600 rounded-md text-center ">
+                      <legend className="px-2 text-md font-semibold">Email</legend>
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          placeholder="first.second@kyu.students.co.ke"
+                          className="w-full py-1 px-3 pb-2 mt-2   rounded-md focus:outline-none text-green-500 font-semibold"
+                        />
+                    </fieldset>
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>}
               </div>
 
               <div>
-                <label htmlFor="role" className="block text-gray-700 font-medium">
-                  Role
-                </label>
-                <select
-                  name="role"
-                  required
-                  className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="student">Student</option>
-                  <option value="supervisor">Supervisor</option>
-                </select>
+                  <fieldset className="border-2 border-green-600 rounded-md text-center ">
+                      <legend className="px-2 text-md font-semibold">Role</legend>
+                        <select
+                          name="role"
+                          required
+                          className="w-full py-1 px-3 pb-2 mt-2   rounded-md focus:outline-none text-green-500 font-semibold "
+                        >
+                          <option value="student" className="text-green-500 font-semibold">Student</option>
+                          <option value="supervisor "  className="text-green-500 font-semibold">Supervisor</option>
+                        </select>
+                    </fieldset>
               </div>
           </section>
 
           <div>
-            <label htmlFor="password" className="block text-gray-700 font-medium">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>}
+              <fieldset className="border-2 border-green-600 rounded-md text-center ">
+                  <legend className="px-2 text-md font-semibold">Password</legend>
+                    <input
+                      type="password"
+                      name="password"
+                      required
+                      className="w-full py-1 px-3 pb-2 mt-2 rounded-md text-green-500 font-semibold focus:outline-none "
+                    />
+                </fieldset>
+                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>}
           </div>
 
 
@@ -103,7 +105,7 @@ const RegisterPage = () => {
           </button>
         </form>
 
-        <div className="mt-4 text-center text-gray-700">
+        <div className="mt-4 text-center text-xl text-green-900">
           Already registered?{" "}
           <Link to="/" className="text-blue-500 font-semibold hover:underline">
             Login

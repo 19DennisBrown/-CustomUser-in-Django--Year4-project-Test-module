@@ -43,7 +43,7 @@ const LoginPage = () => {
               name="username"
               placeholder="eg. CT101-G-100-12"
               required
-              className="w-full p-3 text-lg rounded-md focus:outline-none "
+              className="w-full p-3 text-lg rounded-md focus:outline-none  text-green-500 font-semibold "
             />
           </fieldset>
 
@@ -54,11 +54,11 @@ const LoginPage = () => {
               name="password"
               required
               placeholder="Enter Password"
-              className="w-full text-left text-lg p-3 rounded-md focus:outline-none "
+              className="w-full text-left text-lg p-3 rounded-md  text-green-500 font-semibold focus:outline-none "
               />
           </fieldset>
 
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid ">
             <input
               type="submit"
               value={loading ? "" : "Login"} // Change button text to "Processing..." when loading
@@ -77,13 +77,11 @@ const LoginPage = () => {
               `}
             />
 
-            <button className="bg-green-300 font-semibold  text-orange-600  rounded-md "> 
-                <Link to='/'> Landing Page </Link>
-            </button>
+
         </section>
       </form>
 
-      <div className="absolute bottom-10 text-center text-2xl text-green-900">
+      <div className="absolute bottom-10 text-center text-xl text-green-900">
         Not yet registered?{" "}
         <Link to="/register" className="text-blue-500 font-semibold hover:underline">
           Register

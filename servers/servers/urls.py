@@ -12,7 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('userAuthe.urls')),
     # conversation
-    path('conversation/', include('conversation.urls')),
+    path('members/', include('members.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

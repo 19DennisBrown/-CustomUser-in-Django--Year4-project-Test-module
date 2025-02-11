@@ -7,7 +7,7 @@
 // ViewMembers.jsx
 import  { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import AuthContext from '../context/AuthContext'; // Import AuthContext for authentication
 
 const ViewMembers = () => {
@@ -22,7 +22,7 @@ const ViewMembers = () => {
       try {
         // Make the GET request to the Django API with the proper Authorization headers
         const response = await axios.get(
-          `http://127.0.0.1:8000/user/view_members/${user.user_id}/`, 
+          `http://127.0.0.1:8000/members/view/${user.user_id}/`, 
           {
             headers: {
               Authorization: `Bearer ${authTokens.access}`,
@@ -30,6 +30,7 @@ const ViewMembers = () => {
           }
         );
         setData(response.data);
+        console.log(response.data)
       } catch (err) {
         setError(err.response ? err.response.data.error : 'An error occurred');
       } finally {
@@ -57,16 +58,23 @@ const ViewMembers = () => {
       {/* Display project members */}
       {data.members && data.members.length > 0 ? (
         <ol className="list-none">
-          {data.members.map((member) => (
-            <li key={member.user_id} className="border p-4 my-2 rounded-lg">
+          {data.members.map((member, index) => (
+            <li key={index} className="border p-4 my-2 rounded-lg">
               <p><strong>Name:</strong> {member.first_name} {member.last_name}</p>
-              <p><strong>Email:</strong> {member.user.email}</p>
+              <p><strong>Registeration No:</strong> {member.admision_no}</p>
+              <p><strong>Programme:</strong> {member.programme}</p>
+              <p><strong>Personal Email:</strong> {member.mail || ''}</p>
+              <p><strong>Group Email:</strong> {member.user.email}</p>
             </li>
           ))}
         </ol>
       ) : (
         <p className="text-gray-600">No project members found</p>
       )}
+
+            <button className='py-2 px-4 bg-green-600 text-yellow-400 font-semibold hidden sm:block'>
+                            <Link to='/add_member'>Add Project Members + </Link>
+            </button>
     </div>
   );
 };

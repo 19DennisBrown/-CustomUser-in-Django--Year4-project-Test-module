@@ -26,6 +26,12 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173', 'https://project-pms-kyu.netlify.app'  # Allow your frontend origin
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "https://project-pms-kyu.netlify.app",
+]
+
+
 
 
 # Application definition
@@ -41,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
      'userAuthe', 
-      'conversation', #app
+      'members', #app
 
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
@@ -129,24 +135,24 @@ WSGI_APPLICATION = 'servers.wsgi.application'
 # # Database
 # # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# superbase
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# # superbase
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.getenv('DATABASE_NAME'),
+#         'USER': os.getenv('DATABASE_USER'),
+#         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+#         'HOST': os.getenv('DATABASE_HOST'),
+#         'PORT': os.getenv('DATABASE_PORT'),
+#     }
+# }
 
 
 # Password validation
