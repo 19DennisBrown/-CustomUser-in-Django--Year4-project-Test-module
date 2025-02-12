@@ -30,7 +30,7 @@ const ViewMembers = () => {
           }
         );
         setData(response.data);
-        console.log(response.data)
+        // console.log({"view members" : response.data})
       } catch (err) {
         setError(err.response ? err.response.data.error : 'An error occurred');
       } finally {
@@ -41,7 +41,9 @@ const ViewMembers = () => {
     fetchMembers();
   }, [user.user_id, authTokens]);
 
-  if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+  if (loading) return <div className="flex justify-center items-center h-screen">
+  <div className="w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
+</div>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (
@@ -57,7 +59,7 @@ const ViewMembers = () => {
 
       {/* Display project members */}
       {data.members && data.members.length > 0 ? (
-        <ol className="list-none">
+        <ol className="list-none grid gap-4 sm:grid-cols-3 grid-cols-1">
           {data.members.map((member, index) => (
             <li key={index} className="border p-4 my-2 rounded-lg">
               <p><strong>Name:</strong> {member.first_name} {member.last_name}</p>

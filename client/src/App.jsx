@@ -17,6 +17,7 @@ import LandingPage from './components/LandingPage/LandingPage';
 import Blog from './components/LandingPage/Blog';
 import Services from './components/LandingPage/Services';
 import About from './components/LandingPage/About';
+import Chat from './pages/Chat/Chat';
 
 function App() {
   return (
@@ -35,11 +36,15 @@ function App() {
               <Route path="view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
             </Route>
             <Route path="/supervisorone/:user_id" element={<PrivateRoute><OneSupervisor /></PrivateRoute>} />
+            {/* chat */}
+            <Route path="/chat/:user_id" element={<PrivateRoute><Chat /></PrivateRoute>} />
+
+            {/* auth */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/" element={<LandingPage />} />
 
             {/* landing page */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />

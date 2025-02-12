@@ -25,10 +25,10 @@ const ProfileView = () => {
       .then((response) => {
         setProfileData(response.data); // Set the profile data
         setLoading(false); // Stop loading when data is retrieved
-        console.log(response.data)
+        // console.log(response.data)
       })
       .catch((error) => {
-        console.error("Error fetching profile data:", error);
+        // console.error("Error fetching profile data:", error);
         setLoading(false); // Stop loading even if there's an error
       });
   }, [user.role, authTokens, user.user_id]);

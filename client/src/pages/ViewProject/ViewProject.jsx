@@ -6,6 +6,8 @@ import { useContext, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
+
+import Chat from '../Chat/Chat'
 import ViewMembers from "../ViewMembers";
 
 const ViewProject = () => {
@@ -35,7 +37,9 @@ const ViewProject = () => {
         fetchProject();
     }, [user.user_id, authTokens]);
 
-    if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+    if (loading) return <div className="flex justify-center items-center h-screen">
+    <div className="w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
+    </div>;
     if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
     return (
@@ -66,6 +70,9 @@ const ViewProject = () => {
             ) : (
                 <p className="text-gray-600 text-center">No projects found for this user.</p>
             )}
+
+            {/* Chat */}
+             <Chat projectData={projectData} UserId={user.user_id} />
         </div>
     );
 };
