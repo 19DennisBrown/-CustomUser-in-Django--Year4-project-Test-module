@@ -25,7 +25,7 @@ const ProfileView = () => {
       .then((response) => {
         setProfileData(response.data); // Set the profile data
         setLoading(false); // Stop loading when data is retrieved
-        // console.log(response.data)
+        console.log(response.data.student_lead)
       })
       .catch((error) => {
         // console.error("Error fetching profile data:", error);
@@ -69,7 +69,7 @@ const ProfileView = () => {
             <p className="text-gray-900  border border-green-300 p-2">
             <span className="font-semibold">Supervisor</span>:{" "}
               {profileData.supervisor
-                ? `${profileData.supervisor.first_name} ${profileData.supervisor.last_name}`
+                ? `${profileData.student_lead.supervisor.first_name} ${profileData.student_lead.supervisor.last_name}`
                 : "N/A"}
             </p>
           </section>

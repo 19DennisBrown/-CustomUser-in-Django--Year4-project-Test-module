@@ -119,7 +119,7 @@ class StudentLeadSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         supervisor = self.context['supervisor']  # Retrieved from view
-        project = self.context['project']  # Retrieved from view
+        # project = self.context['project']  # Retrieved from view
 
         # Check if the StudentLead already exists
         student_lead, created = StudentLead.objects.update_or_create(
