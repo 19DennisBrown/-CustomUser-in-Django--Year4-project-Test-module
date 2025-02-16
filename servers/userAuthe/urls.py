@@ -41,11 +41,9 @@ urlpatterns = [
 
     # project and members.
     path('create_project/', views.create_project, name='create_project'),
-    path('add_member/', views.Add_project_Members, name='add_member'),
 
     # personal project for student
     path('view_project/<int:user_id>/', views.ProjectStudentDetailView.as_view(), name='view_project'),
-    path('view_members/<int:user_id>/', views.MemberStudentDetailView.as_view(), name='view_members'),
 
 ]
 

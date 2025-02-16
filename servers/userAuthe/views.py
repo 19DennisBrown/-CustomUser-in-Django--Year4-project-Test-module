@@ -1,3 +1,23 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+
+from .models import StudentProject, StudentLead, ProjectMembers, Supervisor, User
+from .serializers import (
+    ProjectSerializer,
+    StudentLeadSerializer,
+    StudentMemberSerializer,
+    UserSerializer,
+    SupervisorSerializer
+)
+
 
 
 
@@ -74,13 +94,6 @@ class UserRegisterView(APIView):
 
 
 
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .models import Supervisor, StudentLead, Project
-from .serializers import StudentLeadSerializer, ProjectSerializer
-
 # 🧑‍🎓 StudentLead Detail View
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -129,13 +142,6 @@ def supervisor_students(request):
 
 
 
-# Correct way to create a Supervisor and its Profile
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import User, Supervisor
-from .serializers import UserSerializer, SupervisorSerializer
-
 class CreateSupervisorAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Get the incoming user data from the request
@@ -159,11 +165,6 @@ class CreateSupervisorAPIView(APIView):
         return Response(supervisor_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import StudentLead, Supervisor
-from .serializers import StudentLeadSerializer
 
 class CreateStudentLeadAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -205,19 +206,6 @@ def list_supervisors(request):
 
 
 
-from rest_framework.generics import RetrieveAPIView
-from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Supervisor, StudentLead
-from .serializers import SupervisorSerializer
-from rest_framework.generics import RetrieveAPIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.core.exceptions import ObjectDoesNotExist
-from .models import Supervisor, StudentLead, StudentProject
-from .serializers import SupervisorSerializer, StudentLeadSerializer, ProjectSerializer
 
 class SupervisorStudentDetailView(RetrieveAPIView):
     queryset = Supervisor.objects.all()
@@ -267,11 +255,6 @@ class SupervisorStudentDetailView(RetrieveAPIView):
 
 
 
-# Individual Student data
-from rest_framework.generics import RetrieveAPIView
-from .models import StudentLead
-from .serializers import StudentLeadSerializer
-from .serializers import UserSerializer, ProjectSerializer, StudentMemberSerializer
 
 class StudentLeadDetailView(RetrieveAPIView):
     queryset = StudentLead.objects.all()
@@ -349,13 +332,6 @@ def create_project(request):
     # Return errors if validation fails
     return Response(project_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import RetrieveAPIView
-from .models import StudentProject, StudentLead,ProjectMembers
-from .serializers import ProjectSerializer, StudentLeadSerializer
 
 class ProjectStudentDetailView(RetrieveAPIView):
     queryset = StudentLead.objects.all()
@@ -391,57 +367,3 @@ class ProjectStudentDetailView(RetrieveAPIView):
 
 
 
-
-# PROJECT MEMBERS
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def Add_project_Members(request):
-    project_data = request.data
-
-    # Validate and create user
-    user_serializer = UserSerializer(data=project_data)
-    if user_serializer.is_valid():
-        user_serializer.save()
-
-    # Validate and Add members
-    project_members_serializer = StudentMemberSerializer(data=project_data, context={'request': request})
-    if project_members_serializer.is_valid():
-        project_members_serializer.save()
-        return Response({"message": "Project created successfully"}, status=status.HTTP_201_CREATED)
-    
-    # Return errors if validation fails
-    return Response(project_members_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import RetrieveAPIView
-from .models import StudentLead, ProjectMembers
-from .serializers import StudentLeadSerializer, StudentMemberSerializer
-
-class MemberStudentDetailView(RetrieveAPIView):
-    queryset = StudentLead.objects.all()
-    serializer_class = StudentLeadSerializer
-    lookup_field = "user_id"
-
-    def retrieve(self, request, *args, **kwargs):
-        user_id = self.kwargs.get("user_id")  # Extract user_id from URL
-
-        # Get student lead object or return 404
-        student_lead = get_object_or_404(StudentLead, user_id=user_id)
-
-        # Get members associated with the student's project
-        members = ProjectMembers.objects.filter(user__id=user_id)
-
-        # Serialize data
-        member_data = StudentMemberSerializer(members, many=True).data
-        student_data = StudentLeadSerializer(student_lead).data
-
-        # Prepare response
-        response_data = {
-            "student_lead": student_data,
-            "members": member_data if members else [],
-        }
-
-        return Response(response_data, status=status.HTTP_200_OK)

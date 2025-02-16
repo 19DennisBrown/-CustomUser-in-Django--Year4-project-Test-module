@@ -59,27 +59,22 @@ const LoginPage = () => {
                 />
             </fieldset>
 
-          <section className="grid ">
-              <input
+            <section className="grid">
+              <button
                 type="submit"
-                value={loading ? "" : "Login"} // Change button text to "Processing..." when loading
-                disabled={loading} // Disable the button while loading
-                className={`
-                  w-full 
-                  py-1.2 sm:py-3 
-                  text-white 
-                  font-semibold 
-                  rounded-md 
-                  transition 
-                  ${loading ? 
-                    'w-4 h-4 border-t-4 border-blue-600 border-solid rounded-full animate-spin' : 
-                    'bg-blue-500 hover:bg-blue-600 hover:opacity-80'
-                  }
-                `}
-              />
+                disabled={loading}
+                className={`w-full py-3 text-white font-semibold rounded-md transition flex justify-center items-center ${
+                  loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600 hover:opacity-80"
+                }`}
+              >
+                {loading && (
+                  <span className="w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin mr-2"></span>
+                )}
+                {loading ? "Processing..." : "Login"}
+              </button>
+            </section>
 
 
-          </section>
         </form>
 
         <div className=" bottom-10 text-center text-sm sm:text-xl text-green-900">

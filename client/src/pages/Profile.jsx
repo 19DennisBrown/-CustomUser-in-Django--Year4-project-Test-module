@@ -47,7 +47,7 @@ const Profile = () => {
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
-        console.log(`Field: ${name}, Value: ${value}`); // Debugging: See if the event fires correctly
+        // console.log(`Field: ${name}, Value: ${value}`); // Debugging: See if the event fires correctly
 
         setProfile((prev) => ({
             ...prev,
@@ -104,7 +104,7 @@ const Profile = () => {
             });
     };
 
-    const handleCancel = () => navigate("/");
+    const handleCancel = () => navigate("/home");
 
     return (
         <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">

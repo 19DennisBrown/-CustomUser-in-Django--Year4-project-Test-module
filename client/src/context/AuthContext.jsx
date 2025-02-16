@@ -36,10 +36,10 @@ export const AuthProvider = ({ children }) => {
         let errorMessage = ''; // Default error message
 
         const registrationData = {
-            username: e.target.username.value,
-            email: e.target.email.value,
+            username: e.target.username.value.trim(),
+            email: e.target.email.value.trim(),
             password: e.target.password.value,
-            role: e.target.role.value,
+            role: e.target.role.value.trim(),
         };
 
         // Log the data before sending to API
