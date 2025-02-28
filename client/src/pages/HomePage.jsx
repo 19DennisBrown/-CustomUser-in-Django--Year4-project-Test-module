@@ -17,7 +17,7 @@ const HomePage = () => {
     return (
         <div className="p-2 w-full mx-0 bg-white  rounded-lg">
             <Header/>
-            <div className="grid sm:grid-cols-3 grid-cols-1 gap-8">
+            <div className="grid sm:grid-cols-4 grid-cols-1 gap-8">
                 <button className='py-2 pr-8 text-sm sm:text-md bg-green-600 text-yellow-400 font-semibold'>
                     <Link to='/profile'>Create/Update Profile</Link>
                 </button>
@@ -25,6 +25,14 @@ const HomePage = () => {
                 {user.role === 'student' ? (<div>
                     <button className='py-2 px-4  bg-green-600 text-yellow-400 font-semibold hidden sm:block'>
                         <Link to='/create_project'>Create/Update Project</Link>
+                    </button>
+                </div>)
+                    : 
+                    (<div></div>  )
+                }
+                {user.role === 'student' ? (<div>
+                    <button className='py-2 px-4 bg-green-600 text-yellow-400 font-semibold hidden sm:block'>
+                                    <Link to='/create_project_chapters'>Add Project Chapters + </Link>
                     </button>
                 </div>)
                     : 

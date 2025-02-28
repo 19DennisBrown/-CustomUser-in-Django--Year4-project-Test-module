@@ -4,21 +4,16 @@ from django.shortcuts import render
 
         
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from userAuthe.models import StudentProject, StudentLead,ProjectMembers
 from userAuthe.serializers import ProjectSerializer, StudentLeadSerializer,UserSerializer,StudentMemberSerializer
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
 
 
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
 from .models import ProjectParticipants
 from .serializers import ProjectParticipantsSerializer
 
@@ -64,11 +59,6 @@ def add_project_members(request):
 
 
 #   VIEW MEMBERS      # 
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.generics import RetrieveAPIView
-from userAuthe.models import StudentProject, StudentLead,ProjectMembers
 
 class ProjectStudentDetailView(RetrieveAPIView):
     queryset = ProjectParticipants.objects.all()

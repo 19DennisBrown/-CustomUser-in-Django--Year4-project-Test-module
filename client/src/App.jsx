@@ -19,21 +19,34 @@ import Services from './components/LandingPage/Services';
 import About from './components/LandingPage/About';
 import Chat from './pages/Chat/Chat';
 
+import CreateProjectChapters from './pages/ViewProject/CreateProjectChapters';
+import ViewProjectChapters from './pages/ViewProject/ViewProjectChapters';
+
 function App() {
   return (
     <div className="App">
       <Router>
         <AuthProvider>
           <Routes>
+
+            {/* Homepage */}
             <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+
+            {/* Profile */}
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+
+            {/* Project */}
             <Route path="/create_project" element={<PrivateRoute><CreateProject /></PrivateRoute>} />
-            <Route path="/add_member" element={<PrivateRoute><AddMember /></PrivateRoute>} />
+            <Route path="/create_project_chapters" element={<PrivateRoute><CreateProjectChapters /></PrivateRoute>} />
+            <Route path="/view_project_chapters/:user_id" element={<PrivateRoute><ViewProjectChapters /></PrivateRoute>} />
             <Route path="/view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
+             <Route path="view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
+
+
+            <Route path="/add_member" element={<PrivateRoute><AddMember /></PrivateRoute>} />
             <Route path="/onestudentleadforsupervisor/:user_id" element={<PrivateRoute><StudentLeadForSupervisor /></PrivateRoute>} />
             <Route path="/onestudentlead/:user_id">
               <Route index element={<PrivateRoute><OneStudentLead /></PrivateRoute>} />
-              <Route path="view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
             </Route>
             <Route path="/supervisorone/:user_id" element={<PrivateRoute><OneSupervisor /></PrivateRoute>} />
             {/* chat */}

@@ -25,7 +25,7 @@ const ProfileView = () => {
       .then((response) => {
         setProfileData(response.data); // Set the profile data
         setLoading(false); // Stop loading when data is retrieved
-        console.log(response.data.student_lead.supervisor.first_name)
+        // console.log(response.data.student_lead.supervisor.first_name)
       })
       .catch((error) => {
         // console.error("Error fetching profile data:", error);

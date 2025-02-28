@@ -11,7 +11,7 @@ const About = () => {
             <Link to="/">return</Link>
         </button>
       <div className="container mx-auto text-center">
-        <p className="text-sm">&copy; {new Date().getFullYear()} Your Company Name. All rights reserved.</p>
+        <p className="text-sm">&copy; {new Date().getFullYear()} WPMS. All rights reserved.</p>
         <div className="flex justify-center space-x-6 mt-2">
           <a href="#" className="hover:text-blue-400 transition duration-200">Privacy Policy</a>
           <a href="#" className="hover:text-blue-400 transition duration-200">Terms of Service</a>

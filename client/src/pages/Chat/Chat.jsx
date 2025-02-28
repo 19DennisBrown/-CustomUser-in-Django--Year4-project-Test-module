@@ -30,8 +30,8 @@ const Chat = ({ chatInfo, projectData }) => {
     setSupervisorID(supervisorIdFromChat || supervisorIdFromProject);
     setStudentLeadID(studentLeadIdFromChat || studentLeadIdFromProject);
 
-    console.log("Supervisor ID:", supervisorIdFromChat || supervisorIdFromProject);
-    console.log("Student Lead ID:", studentLeadIdFromChat || studentLeadIdFromProject);
+    // console.log("Supervisor ID:", supervisorIdFromChat || supervisorIdFromProject);
+    // console.log("Student Lead ID:", studentLeadIdFromChat || studentLeadIdFromProject);
   }, [chatInfo, projectData]);
 
   useEffect(() => {

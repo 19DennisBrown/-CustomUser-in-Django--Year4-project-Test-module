@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import loginSvg from "../assets/images/svg/login.svg"
 
 const LoginPage = () => {
   let { loginUser } = useContext(AuthContext);
@@ -21,14 +22,14 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-full grid grid-cols-1 sm:grid-cols-2 h-[100vh] bg-gray-400 ">
+    <div className="w-full grid grid-cols-1 sm:grid-cols-2 h-[100vh] bg-white ">
       <div className=" grid items-center gap-4 py-24 justify-center ">
         <form
           onSubmit={handleSubmit}
-          className="bg-white  p-8 rounded-lg shadow-lg w-full sm:w-[35vw]  flex flex-col gap-5"
+          className="bg-white  p-8 rounded-lg shadow-2xl w-full sm:w-[35vw]  flex flex-col gap-5"
         >
-          <h2 className="text-lg sm:text-3xl font-bold text-center text-gray-800 mb-4">
-            Login
+          <h2 className="text-lg sm:text-xl font-bold text-center text-gray-800 mb-4">
+            Welcome to WPMS. Login!
           </h2>
 
           {error && (
@@ -37,25 +38,25 @@ const LoginPage = () => {
             </div>
           )}
 
-          <fieldset className="border-2 border-green-600 rounded-md text-center">
-              <legend className="px-2  text-sm sm:text-lg font-semibold font-sans">Registeration-/Unique-Code</legend>
+          <fieldset className="border-1 border-green-600 rounded-md text-center">
+              <legend className="px-2  text-sm  font-semibold font-sans">Registeration-/Unique-Code</legend>
               <input
                 type="text"
                 name="username"
                 placeholder="eg. CT101-G-100-12"
                 required
-                className="w-full p-2 text-sm sm:text-lg rounded-md focus:outline-none  text-green-500 font-semibold "
+                className="w-full p-2 text-sm  rounded-md focus:outline-none  text-green-500 font-semibold "
               />
             </fieldset>
 
-          <fieldset className="border-2 border-green-600 rounded-md text-center">
-              <legend className="px-2  text-sm sm:text-lg font-semibold">Password</legend>
+          <fieldset className="border-1 border-green-600 rounded-md text-center">
+              <legend className="px-2  text-sm  font-semibold">Password</legend>
               <input
                 type="password"
                 name="password"
                 required
                 placeholder="Enter Password"
-                className="w-full text-left text-sm sm:text-lg p-2 rounded-md  text-green-500 font-semibold focus:outline-none "
+                className="w-full text-left text-sm  p-2 rounded-md  text-green-500 font-semibold focus:outline-none "
                 />
             </fieldset>
 
@@ -68,24 +69,28 @@ const LoginPage = () => {
                 }`}
               >
                 {loading && (
-                  <span className="w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin mr-2"></span>
+                  <span className="w-4 h-4 border-2 border-t-2 border-green-500 rounded-full animate-spin mr-2"></span>
                 )}
-                {loading ? "Processing..." : "Login"}
+                {loading ? "logging in our user..." : "Login"}
               </button>
             </section>
 
 
         </form>
 
-        <div className=" bottom-10 text-center text-sm sm:text-xl text-green-900">
+        <div className=" bottom-10 text-center text-sm  text-green-900">
           Not yet registered?{" "}
-          <Link to="/register" className="text-blue-500 font-semibold hover:underline">
+          <Link to="/register" className="text-blue-500 font-semibold hover:underline hover:text-green-600">
             Register
           </Link>
         </div>
       </div>
 
-      <div className="hidden sm:grid bg-green-800 "></div>
+
+                {/* svg section */}
+      <div className="hidden sm:flex jutify-center items-center p-19">
+        <img src={loginSvg}  alt="login"  className="text-blue-200"/>
+      </div>
     </div>
   );
 };

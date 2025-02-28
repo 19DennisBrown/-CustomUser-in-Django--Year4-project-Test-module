@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import loginSvg from "../assets/images/svg/register.svg"
 
 const RegisterPage = () => {
   const { registerUser } = useContext(AuthContext);
@@ -22,14 +23,14 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className=" bg-gray-300 w-full grid grid-cols-1 sm:grid-cols-2 h-[100vh] ">
+    <div className=" bg-gray-00 w-full grid grid-cols-1 sm:grid-cols-2 h-[100vh] ">
 
           <div className="grid items-center gap-4 py-16 justify-center ">
 
 
-            <form onSubmit={handleSubmit} className="p-8 rounded-lg shadow-lg w-full sm:w-[35vw]  flex flex-col gap-5">
-            <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-              Register
+            <form onSubmit={handleSubmit} className="p-8 rounded-lg shadow-2xl w-full sm:w-[35vw]  flex flex-col gap-5">
+            <h2 className="text-xl font-bold text-center text-gray-800 mb-6">
+              Signup to WPMS. Register!
             </h2>
 
             {errors.non_field_errors && (
@@ -37,14 +38,14 @@ const RegisterPage = () => {
             )}
 
               <div>
-                <fieldset className="border-2 border-green-600 rounded-md text-center ">
-                    <legend className="px-2  text-sm sm:text-lg font-semibold">Registeration-/Unique Code</legend>
+                <fieldset className="border-1 border-green-600 rounded-md text-center ">
+                    <legend className="px-2  text-sm  font-semibold">Registeration-/Unique Code</legend>
                       <input
                         type="text"
                         name="username"
                         required
                         placeholder="CT101-G-100-12"
-                        className="w-full p-2 text-sm sm:text-lg text-green-500 font-semibold  border-gray-300 rounded-md focus:outline-none"
+                        className="w-full p-2 text-sm  text-green-500 font-semibold  border-gray-300 rounded-md focus:outline-none"
                       />
                   </fieldset>
                   {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username[0]}</p>}
@@ -52,22 +53,22 @@ const RegisterPage = () => {
 
               <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                      <fieldset className="border-2 border-green-600 rounded-md text-center ">
-                          <legend className="px-2  text-sm sm:text-lg font-semibold">Email</legend>
+                      <fieldset className="border-1 border-green-600 rounded-md text-center ">
+                          <legend className="px-2  text-sm  font-semibold">Email</legend>
                             <input
                               type="email"
                               name="email"
                               required
                               placeholder="first.second@kyu.students.co.ke"
-                              className="w-full p-2 text-sm sm:text-lg px-3 pb-2 mt-2   rounded-md focus:outline-none text-green-500 font-semibold"
+                              className="w-full p-2 text-sm  px-3 pb-2 mt-2   rounded-md focus:outline-none text-green-500 font-semibold"
                             />
                         </fieldset>
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email[0]}</p>}
                   </div>
 
                   <div>
-                      <fieldset className="border-2 border-green-600 rounded-md text-center ">
-                          <legend className="px-2  text-sm sm:text-lg font-semibold">Role</legend>
+                      <fieldset className="border-1 border-green-600 rounded-md text-center ">
+                          <legend className="px-2  text-sm  font-semibold">Role</legend>
                             <select
                               name="role"
                               required
@@ -81,13 +82,13 @@ const RegisterPage = () => {
               </section>
 
               <div>
-                  <fieldset className="border-2 border-green-600 rounded-md text-center ">
-                      <legend className="px-2  text-sm sm:text-lg font-semibold">Password</legend>
+                  <fieldset className="border-1 border-green-600 rounded-md text-center ">
+                      <legend className="px-2  text-sm  font-semibold">Password</legend>
                         <input
                           type="password"
                           name="password"
                           required
-                          className="w-full p-2 text-sm sm:text-lg py-1 px-3 pb-2 mt-2 rounded-md text-green-500 font-semibold focus:outline-none "
+                          className="w-full p-2 text-sm  py-1 px-3 pb-2 mt-2 rounded-md text-green-500 font-semibold focus:outline-none "
                         />
                     </fieldset>
                     {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password[0]}</p>}
@@ -103,23 +104,26 @@ const RegisterPage = () => {
                   }`}
                 >
                   {loading && (
-                    <span className="w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin mr-2"></span>
+                    <span className="w-4 h-4 border-2 border-t-2 border-green-600 rounded-full animate-spin mr-2"></span>
                   )}
-                  {loading ? "Processing..." : "Register"}
+                  {loading ? "Registering new user..." : "Register"}
                 </button>
               </section>
 
             </form>
 
-            <div className="mt-4 text-center text-sm sm:text-xl text-green-900">
+            <div className="mt-4 text-center text-sm text-green-900">
               Already registered?{" "}
-              <Link to="/" className="text-blue-500 font-semibold hover:underline">
+              <Link to="/" className="text-blue-500 font-semibold hover:underline hover:text-green-600">
                 Login
               </Link>
             </div>
           </div>
 
-            <div className="bg-green-600 hidden sm:grid"></div>
+                  {/* svg section */}
+          <div className="hidden sm:flex jutify-center items-center p-19">
+            <img src={loginSvg}  alt="login"  className="text-blue-200"/>
+          </div>
     </div>
   );
 };

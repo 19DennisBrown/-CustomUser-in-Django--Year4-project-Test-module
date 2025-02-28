@@ -32,7 +32,7 @@ const CreateProject = () => {
         },
     })
     .then(() => {
-        alert("Profile created successfully!");
+        // alert("project created successfully!");
         navigate("/home");
     })
     .catch((error) => {
@@ -53,39 +53,65 @@ const CreateProject = () => {
     setLoading(false);
   };
 
+  const handleCancel = () => navigate("/home");
+
   return (
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Create a New Project</h2>
+
+      <h2 className="text-2xl font-semibold mb-20">Create a New Project or Update Details</h2>
       {error && <p className="text-red-500 mb-4">{error}</p>}
+
+
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-lg"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-lg"
-            required
-          ></textarea>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-          disabled={loading}
-        >
-          {loading ? "Creating..." : "Create Project"}
-        </button>
+          <fieldset className="border-1 border-black  mb-4 rounded-md text-left">
+              <legend className="px-2 mx-4  text-sm   font-sans">Project Title</legend>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 focus:outline-none"
+                    placeholder="eg, Web-based project manager"
+                    required
+                  />
+            </fieldset>
+
+
+            <fieldset className="border-1 border-black rounded-md mb-10 text-left">
+              <legend className="px-2 mx-4   text-sm  font-sans">Project Description</legend>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full px-3 py-2 focus:outline-none"
+                required
+              ></textarea>
+            </fieldset>
+
+                  {/* Buttons */}
+                  <div className="flex space-x-4 ">
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full py-2 text-white font-semibold rounded-md transition flex justify-center items-center ${
+                          loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600 hover:opacity-80"
+                        }`}
+                      >
+                        {loading && (
+                          <span className="w-4 h-4 border-2 border-t-2 border-green-600 rounded-full animate-spin mr-2"></span>
+                        )}
+                        {loading ? "creating project..." : "create project"}
+                      </button>
+
+                      {/* cancel */}
+                      <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="w-full py-2   bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-700"
+                    >
+                        Cancel
+                    </button>
+                </div>
       </form>
     </div>
   );

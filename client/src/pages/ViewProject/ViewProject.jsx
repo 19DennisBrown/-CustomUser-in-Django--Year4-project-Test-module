@@ -9,6 +9,7 @@ import axios from "axios";
 
 import Chat from '../Chat/Chat'
 import ViewMembers from "../ViewMembers";
+import ViewProjectChapters from "./ViewProjectChapters";
 
 const ViewProject = () => {
     const { authTokens, user } = useContext(AuthContext);
@@ -38,7 +39,7 @@ const ViewProject = () => {
     }, [user.user_id, authTokens]);
 
     if (loading) return <div className="flex justify-center items-center h-screen">
-    <div className="w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
+    <div className="w-16 h-16 border-t-4 border-green-600 border-solid rounded-full animate-spin"></div>
     </div>;
     if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
@@ -61,7 +62,7 @@ const ViewProject = () => {
 
 
 
-                    <ViewMembers supervisorId={user.supervisorId} />
+                    <ViewMembers studentId={user.studentId} />
 
                     <button className=" text-yellow-800 border border-green-600 fonr-semibold px-8 mx-4 rounded-xl">
                         <Link to='/home'>return to Homepage.</Link>
@@ -70,6 +71,9 @@ const ViewProject = () => {
             ) : (
                 <p className="text-gray-600 text-center">No projects found for this user.</p>
             )}
+
+            {/* Chapters */}
+            <ViewProjectChapters studentId={user.studentId}/>
 
             {/* Chat */}
              <Chat projectData={projectData} UserId={user.user_id} />
