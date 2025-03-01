@@ -90,3 +90,128 @@ class ProjectChaptersDetailView(RetrieveAPIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
+#  ONE CHAPTER.
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .models import ProjectChapters
+from .serializers import ProjectChaptersSerializer
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_specific_chapter(request, chapter_id):
+    try:
+        # Fetch the chapter by ID
+        chapter = ProjectChapters.objects.get(id=chapter_id)
+        
+        # Check if the requesting user owns the chapter
+        if chapter.user != request.user:
+            return Response(
+                {"error": "You do not have permission to view this chapter."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Serialize the chapter data
+        serializer = ProjectChaptersSerializer(chapter)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ProjectChapters.DoesNotExist:
+        return Response(
+            {"error": "Project chapter not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+        
+
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.exceptions import PermissionDenied
+from .models import ProjectChapters
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_project_chapter(request, chapter_id):
+    try:
+        # Fetch the chapter by ID
+        chapter = ProjectChapters.objects.get(id=chapter_id)
+        
+        # Check if the requesting user owns the chapter
+        if chapter.user != request.user:
+            raise PermissionDenied("You do not have permission to delete this chapter.")
+        
+        # Delete the chapter
+        chapter.delete()
+        
+        return Response(
+            {"message": "Project chapter deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
+    except ProjectChapters.DoesNotExist:
+        return Response(
+            {"error": "Project chapter not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except PermissionDenied as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.exceptions import PermissionDenied
+from .models import ProjectChapters
+from .serializers import ProjectChaptersSerializer
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_project_chapter(request, chapter_id):
+    try:
+        # Fetch the chapter by ID
+        chapter = ProjectChapters.objects.get(id=chapter_id)
+        
+        # Check if the requesting user owns the chapter
+        if chapter.user != request.user:
+            raise PermissionDenied("You do not have permission to update this chapter.")
+        
+        # Update the chapter
+        serializer = ProjectChaptersSerializer(chapter, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except ProjectChapters.DoesNotExist:
+        return Response(
+            {"error": "Project chapter not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except PermissionDenied as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

@@ -11,7 +11,6 @@ import OneStudentLead from './pages/OneStudentLead';
 import OneSupervisor from './pages/OneSupervisor';
 import CreateProject from './pages/CreateProject';
 import ViewProject from './pages/ViewProject/ViewProject';
-import AddMember from './pages/AddMember';
 import StudentLeadForSupervisor from './pages/StudentLead/OneStudentLeadForSupervisor';
 import LandingPage from './components/LandingPage/LandingPage';
 import Blog from './components/LandingPage/Blog';
@@ -19,8 +18,14 @@ import Services from './components/LandingPage/Services';
 import About from './components/LandingPage/About';
 import Chat from './pages/Chat/Chat';
 
+import AddMember from './pages/AddMember';
+import ViewOneMemberDetails from './pages/StudentMembers/ViewOneMemberDetails'
+import UpdateProjectMemberDetails from './pages/StudentMembers/UpdateProjectMemberDetails'
+
 import CreateProjectChapters from './pages/ViewProject/CreateProjectChapters';
 import ViewProjectChapters from './pages/ViewProject/ViewProjectChapters';
+import ViewProjectChapterDetails from './pages/ViewProject/ViewProjectChapterDetails';
+import EditProjectChapter from './pages/ViewProject/EditProjectChapter';
 
 function App() {
   return (
@@ -37,10 +42,19 @@ function App() {
 
             {/* Project */}
             <Route path="/create_project" element={<PrivateRoute><CreateProject /></PrivateRoute>} />
+            <Route path="/view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
+
+             {/* project chapters. */}
             <Route path="/create_project_chapters" element={<PrivateRoute><CreateProjectChapters /></PrivateRoute>} />
             <Route path="/view_project_chapters/:user_id" element={<PrivateRoute><ViewProjectChapters /></PrivateRoute>} />
-            <Route path="/view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
-             <Route path="view_project/:user_id" element={<PrivateRoute><ViewProject /></PrivateRoute>} />
+            <Route path="/view_project_chapter/:chapter_id" element={<ViewProjectChapterDetails />} />
+            <Route path="/edit_project_chapter/:chapter_id" element={<PrivateRoute><EditProjectChapter /></PrivateRoute>} />
+
+
+              {/* project members */}
+            <Route path="/one_member_details/:member_id"  element={<PrivateRoute><ViewOneMemberDetails /></PrivateRoute>} />
+            <Route path="/edit_member_details/:member_id" element={<PrivateRoute><UpdateProjectMemberDetails /></PrivateRoute>} />
+
 
 
             <Route path="/add_member" element={<PrivateRoute><AddMember /></PrivateRoute>} />

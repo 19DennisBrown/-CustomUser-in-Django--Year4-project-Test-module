@@ -94,5 +94,128 @@ class ProjectStudentDetailView(RetrieveAPIView):
 
 
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from .models import ProjectParticipants
+from .serializers import ProjectParticipantsSerializer
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_specific_member(request, member_id):
+    try:
+        # Fetch the member by ID
+        member = ProjectParticipants.objects.get(id=member_id)
+        
+        # Check if the requesting user owns the member (if applicable)
+        if member.user != request.user:
+            return Response(
+                {"error": "You do not have permission to view this member."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Serialize the member data
+        serializer = ProjectParticipantsSerializer(member)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except ProjectParticipants.DoesNotExist:
+        return Response(
+            {"error": "Project member not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.exceptions import PermissionDenied
+from .models import ProjectParticipants
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_project_member(request, member_id):
+    try:
+        # Fetch the member by ID
+        member = ProjectParticipants.objects.get(id=member_id)
+        
+        # Check if the requesting user owns the member (if applicable)
+        if member.user != request.user:
+            raise PermissionDenied("You do not have permission to delete this member.")
+        
+        # Delete the member
+        member.delete()
+        
+        return Response(
+            {"message": "Project member deleted successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
+    except ProjectParticipants.DoesNotExist:
+        return Response(
+            {"error": "Project member not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except PermissionDenied as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+
+
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.core.exceptions import PermissionDenied
+from .models import ProjectParticipants
+from .serializers import ProjectParticipantsSerializer
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_project_member(request, member_id):
+    try:
+        # Fetch the member by ID
+        member = ProjectParticipants.objects.get(id=member_id)
+        
+        # Check if the requesting user owns the member (if applicable)
+        if member.user != request.user:
+            raise PermissionDenied("You do not have permission to update this member.")
+        
+        # Update the member
+        serializer = ProjectParticipantsSerializer(member, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except ProjectParticipants.DoesNotExist:
+        return Response(
+            {"error": "Project member not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except PermissionDenied as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 
