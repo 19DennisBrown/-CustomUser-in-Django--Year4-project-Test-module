@@ -17,41 +17,34 @@ from rest_framework.permissions import IsAuthenticated
 from .models import ProjectChapters
 from .serializers import ProjectChaptersSerializer
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_project_chapters(request):
-        data = request.data
-        chapters_data = data.get('chapters', [])
+    chapters_data = request.data.get('chapters', [])
 
-        if not isinstance(chapters_data, list):
-                return Response({"error": "Expected a list of chapters"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        created_chapters = []
-        errors = []
+    if not isinstance(chapters_data, list):
+        return Response({"error": "Expected a list of chapters"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    created_chapters = []
+    errors = []
 
-        for chapter in chapters_data:
-                # validate and create
-                user_serializer = UserSerializer(data=chapter)
+    for chapter_data in chapters_data:
+        # Validate and create chapter directly
+        serializer = ProjectChaptersSerializer(data=chapter_data, context={'request': request})
+        if serializer.is_valid():
+            chapter = serializer.save()
+            created_chapters.append(chapter)
+        else:
+            errors.append(serializer.errors)
 
-                if user_serializer.is_valid():
-                    user = user_serializer.save()
-                    chapter['user'] = user.id  # Assign the created user ID to the chapter
-                
-                        # Validate and create Chapter
-                chapter_serializer = ProjectChaptersSerializer(data=chapter, context={'request': request})
-                if chapter_serializer.is_valid():
-                    member = chapter_serializer.save()
-                    created_chapters.append(member)
-                else:
-                    errors.append(chapter_serializer.errors)
+    if errors:
+        return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        if errors:
-                return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(
-                {"message": f"{len(created_chapters)} project chapters added successfully"},
-                status=status.HTTP_201_CREATED
-            )
+    return Response(
+        {"message": f"{len(created_chapters)} chapters added successfully"},
+        status=status.HTTP_201_CREATED
+    )
 
 
 

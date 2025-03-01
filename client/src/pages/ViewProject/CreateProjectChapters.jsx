@@ -1,9 +1,10 @@
 
 
 
+
 import { useState, useContext } from "react";
 import AuthContext from "../../context/AuthContext";
-import { useNavigate, Link,useParams, } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import axios from "axios";
 
 const CreateProjectChapters = () => {
@@ -19,20 +20,20 @@ const CreateProjectChapters = () => {
 
     // Handle input changes
     const handleChange = (index, e) => {
-        const newchapter = [...chapters];
-        newchapter[index][e.target.name] = e.target.value;
-        setChapters(newchapter);
+        const newChapters = [...chapters];
+        newChapters[index][e.target.name] = e.target.value;
+        setChapters(newChapters);
     };
 
     // Add a new chapter field
     const addChapter = () => {
-        setChapters([...chapters,  { chapter_name: "", chapter_title: "" }]);
+        setChapters([...chapters, { chapter_name: "", chapter_title: "" }]);
     };
 
     // Remove a Chapter field
     const removeChapter = (index) => {
-        const newchapter = chapters.filter((_, i) => i !== index);
-        setChapters(newchapter);
+        const newChapters = chapters.filter((_, i) => i !== index);
+        setChapters(newChapters);
     };
 
     // Handle form submission
@@ -41,12 +42,9 @@ const CreateProjectChapters = () => {
         setLoading(true);
         setError(null);
 
-        // Ensure the data is a dictionary with a key "chapter"
+        // Updated request data structure
         const requestData = {
-          chapters: chapters.map((chapter) => ({
-                ...chapter,
-                user: user.id, // Add user ID to each chapter
-            })),
+            chapters: chapters  // No user field added here
         };
 
         const url = "http://127.0.0.1:8000/chapters/create/";
@@ -59,11 +57,16 @@ const CreateProjectChapters = () => {
                 },
             });
 
-            navigate(`/view_project/${user_id}`); // Redirect after success
+            navigate(`/view_project/${user_id}`);
             
         } catch (err) {
             if (err.response && err.response.data) {
-                setError(err.response.data.non_field_errors?.join(", ") || "An error occurred.");
+                // Handle field-specific errors if needed
+                setError(
+                    err.response.data.non_field_errors?.join(", ") || 
+                    JSON.stringify(err.response.data) || 
+                    "An error occurred."
+                );
             } else {
                 setError("A network error occurred. Please try again.");
             }
@@ -71,6 +74,9 @@ const CreateProjectChapters = () => {
             setLoading(false);
         }
     };
+
+    // ... rest of the component remains the same ...
+    // (The JSX rendering code doesn't need changes)
 
     return (
         <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
@@ -105,8 +111,6 @@ const CreateProjectChapters = () => {
                             />
                         </div>
 
-
-
                         {chapters.length > 1 && (
                             <button
                                 type="button"
@@ -118,7 +122,6 @@ const CreateProjectChapters = () => {
                         )}
                     </div>
                 ))}
-
 
                 <section className="grid grid-cols-2 mt-8 gap-8">
                     <button
@@ -134,7 +137,7 @@ const CreateProjectChapters = () => {
                         className="w-full bg-blue-600 text-white py-2 mb-4 rounded-lg hover:bg-blue-700"
                         disabled={loading}
                     >
-                        {loading ? "saving chapter..." : "Submit Chapters"}
+                        {loading ? "Saving chapters..." : "Submit Chapters"}
                     </button>
                 </section>
             </form>
