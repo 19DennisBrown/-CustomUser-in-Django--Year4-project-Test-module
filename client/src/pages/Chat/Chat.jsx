@@ -29,9 +29,6 @@ const Chat = ({ chatInfo, projectData }) => {
 
     setSupervisorID(supervisorIdFromChat || supervisorIdFromProject);
     setStudentLeadID(studentLeadIdFromChat || studentLeadIdFromProject);
-
-    // console.log("Supervisor ID:", supervisorIdFromChat || supervisorIdFromProject);
-    // console.log("Student Lead ID:", studentLeadIdFromChat || studentLeadIdFromProject);
   }, [chatInfo, projectData]);
 
   useEffect(() => {
@@ -60,6 +57,7 @@ const Chat = ({ chatInfo, projectData }) => {
           },
         });
         setMessages(response.data);
+        console.log("Fetched Messages:", response.data); // Debugging
       } catch (err) {
         setError(err.response?.data?.detail || err.message);
       } finally {
@@ -106,31 +104,30 @@ const Chat = ({ chatInfo, projectData }) => {
 
   return (
     <div className="w-[60vw] mx-auto p-8 bg-gray-500 shadow-lg rounded-lg">
-      {/* Display a spinner overlay while loading */}
       {loading && (
         <div className="flex justify-center items-center h-16">
           <div className="w-8 h-8 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
         </div>
       )}
 
-      {/* Error banner displayed inside the chat container */}
       {error && (
         <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center">
           {error}
         </div>
       )}
 
-      <h2 className="text-2xl font-bold mb-4">Talk to {user.role == 'student'? "Supervisor": "Student Lead"}</h2>
+      <h2 className="text-2xl font-bold mb-4">Talk to {user.role === 'student' ? "Supervisor" : "Student Lead"}</h2>
 
       <div className="chat-box mb-6 p-4 bg-gray-50 rounded-lg shadow-sm max-h-96 overflow-y-auto">
         {messages.length > 0 ? (
           messages.map((message) => (
-            <div key={message.id} className={`message mb-4 p-3 rounded-md border ${user.user_id === studentLeadID ? "text-right ":" text-left"}`}>
-
-              <p className={`text-gray-900 mb-4 text-lg`}>{message.content}</p>
+            <div key={message.id} className={`message mb-4 p-3 rounded-md border  ${message.user?.role === 'student' ? "text-right bg-green-100" : "text-left bg-yellow-100"}`}>
+              <p className={`text-gray-900 mb-4 text-lg`}>
+                {message.content}
+              </p>
               <hr />
               <p className="text-sm text-gray-500">
-                Sent at {new Date(message.created_at).toLocaleString()}
+                Sent at {new Date(message.created_at).toLocaleString()} by @{message.user?.username}
               </p>
             </div>
           ))

@@ -4,21 +4,18 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ChatMessageSerializer
+from .models import ChatMessage
 
 @api_view(['POST'])
 def create_chat_message(request):
     if request.method == 'POST':
-        serializer = ChatMessageSerializer(data=request.data)
+        # Pass the request object in the context
+        serializer = ChatMessageSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()  # Will call the create method
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import ChatMessage
-from .serializers import ChatMessageSerializer
 
 @api_view(['GET'])
 def get_chat_messages(request, student_lead_id, supervisor_id):
