@@ -26,8 +26,6 @@ import CreateProjectChapters from './pages/ViewProject/CreateProjectChapters';
 import ViewProjectChapters from './pages/ViewProject/ViewProjectChapters';
 import ViewProjectChapterDetails from './pages/ViewProject/ViewProjectChapterDetails';
 import EditProjectChapter from './pages/ViewProject/EditProjectChapter';
-import ForgotPassword from './Forgot_password/ForgotPassword';
-import ResetPassword from './Forgot_password/ResetPassword';
 
 function App() {
   return (
@@ -77,10 +75,6 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />
-
-            {/* Reset password */}
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Routes>
         </AuthProvider>
       </Router>
