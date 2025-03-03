@@ -133,3 +133,16 @@ class StudentLeadSerializer(serializers.ModelSerializer):
         )
 
         return student_lead
+
+
+
+# FORGOT PASSWORD
+        
+from rest_framework import serializers
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class ResetPasswordSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8)

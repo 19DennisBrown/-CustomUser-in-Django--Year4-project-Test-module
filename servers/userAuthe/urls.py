@@ -45,5 +45,10 @@ urlpatterns = [
     # personal project for student
     path('view_project/<int:user_id>/', views.ProjectStudentDetailView.as_view(), name='view_project'),
 
+
+    # FORGOT PASSWORD
+    path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
+    path('reset-password/', views.ResetPasswordView.as_view(), name='reset-password'),
+
 ]
 

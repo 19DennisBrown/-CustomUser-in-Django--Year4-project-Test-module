@@ -66,3 +66,16 @@ class ProjectMembers(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+ 
+from django.db import models
+from django.utils import timezone
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=32, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        """Check if the token is expired (e.g., valid for 1 hour)."""
+        return (timezone.now() - self.created_at).total_seconds() > 3600

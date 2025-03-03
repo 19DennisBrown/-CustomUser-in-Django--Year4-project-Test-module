@@ -367,3 +367,67 @@ class ProjectStudentDetailView(RetrieveAPIView):
 
 
 
+
+
+# FORGOT PASSWORD
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import User, PasswordResetToken
+from .serializers import ForgotPasswordSerializer, ResetPasswordSerializer
+
+class ForgotPasswordView(APIView):
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            user = User.objects.filter(email=email).first()
+
+            if user:
+                # Generate a unique token
+                token = get_random_string(length=32)
+                PasswordResetToken.objects.create(user=user, token=token)
+
+                # Send email with reset link
+                reset_link = f"http://yourfrontend.com/reset-password/{token}"
+                send_mail(
+                    'Password Reset Request',
+                    f'Click the link to reset your password: {reset_link}',
+                    'noreply@yourdomain.com',
+                    [email],
+                    fail_silently=False,
+                )
+
+                return Response({'message': 'Password reset link sent to your email.'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+   
+
+from django.contrib.auth.hashers import make_password
+
+class ResetPasswordView(APIView):
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            token = serializer.validated_data['token']
+            new_password = serializer.validated_data['new_password']
+
+            # Find the token in the database
+            reset_token = PasswordResetToken.objects.filter(token=token).first()
+
+            if reset_token and not reset_token.is_expired():
+                user = reset_token.user
+                user.password = make_password(new_password)
+                user.save()
+
+                # Delete the token after use
+                reset_token.delete()
+
+                return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid or expired token.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
