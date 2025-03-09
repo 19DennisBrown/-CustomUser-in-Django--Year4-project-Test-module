@@ -5,6 +5,7 @@ import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../../context/AuthContext';
+import Header from "../../components/Header"
 
 const ViewOneMemberDetails = () => {
   const { authTokens } = useContext(AuthContext);
@@ -19,7 +20,7 @@ const ViewOneMemberDetails = () => {
     const fetchMemberDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/members/view_one_member/${member_id}/`,
+          `http://localhost:8000/members/view_one_member/${member_id}/`,
           {
             headers: {
               Authorization: `Bearer ${authTokens.access}`,
@@ -41,7 +42,7 @@ const ViewOneMemberDetails = () => {
   const handleDelete = async () => {
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/members/delete/${member_id}/`,
+        `http://localhost:8000/members/delete/${member_id}/`,
         {
           headers: {
             Authorization: `Bearer ${authTokens.access}`,
@@ -49,7 +50,7 @@ const ViewOneMemberDetails = () => {
         }
       );
       // Redirect to the members list after deletion
-      navigate('/view_members');
+      navigate('/home');
     } catch (err) {
       setError(err.response ? err.response.data.error : 'An error occurred');
     }
@@ -71,8 +72,9 @@ const ViewOneMemberDetails = () => {
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Member Details</h2>
+    <div className="w-full text-center mx-1 sm:mx-auto p-1 bg-white rounded-lg shadow-md">
+      <Header/>
+      <h2 className="text-xl font-bold mb-6 text-center text-gray-800">Project Member Details</h2>
       {member ? (
         <div className="space-y-4">
           <div className="bg-gray-50 p-4 rounded-lg">
@@ -91,30 +93,30 @@ const ViewOneMemberDetails = () => {
             <p className="text-gray-700"><strong>Email:</strong> {member.mail}</p>
           </div>
 
-          <div className="flex gap-4 mt-6">
+          <div className="flex gap-4 mt-8 justify-center">
                 {/* update button */}
             <button
               onClick={handleEdit}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+              className="border border-blue-500 text-green-600 px-4  rounded-lg hover:bg-blue-600 transition duration-200"
             >
-              Edit Member
+              Edit..
             </button>
 
             {/* delete button */}
             <button
               onClick={handleDelete}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
+              className="border border-red-500 text-red-600 px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
             >
-              Delete Member
+              Delete..
             </button>
 
             {/* Exit button */}
-            <Link
-              to="/view_members"
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200"
+            <button
+              onClick={() => navigate(-1)}
+              className="border border-gray-500 text-grey-800 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200"
             >
-              Back to Members
-            </Link>
+              Back
+            </button>
           </div>
         </div>
       ) : (

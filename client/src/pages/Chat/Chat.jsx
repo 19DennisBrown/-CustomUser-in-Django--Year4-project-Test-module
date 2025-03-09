@@ -1,7 +1,3 @@
-
-
-
-
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../../context/AuthContext';
@@ -15,6 +11,7 @@ const Chat = ({ chatInfo, projectData }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sending, setSending] = useState(false); // New sending state
 
   const [supervisorID, setSupervisorID] = useState();
   const [studentLeadID, setStudentLeadID] = useState();
@@ -50,14 +47,13 @@ const Chat = ({ chatInfo, projectData }) => {
 
     const fetchMessages = async () => {
       try {
-        const url = `http://127.0.0.1:8000/chat/chat_messages/${student_lead_id}/${supervisor_id}/`;
+        const url = `http://localhost:8000/chat/chat_messages/${student_lead_id}/${supervisor_id}/`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${authTokens.access}`,
           },
         });
         setMessages(response.data);
-        console.log("Fetched Messages:", response.data); // Debugging
       } catch (err) {
         setError(err.response?.data?.detail || err.message);
       } finally {
@@ -80,9 +76,11 @@ const Chat = ({ chatInfo, projectData }) => {
       return;
     }
 
+    setSending(true); // Disable the submit button
+
     try {
       const response = await axios.post(
-        'http://127.0.0.1:8000/chat/chat_messages/create/',
+        'http://localhost:8000/chat/chat_messages/create/',
         {
           student_lead: student_lead_id,
           supervisor: supervisor_id,
@@ -99,56 +97,48 @@ const Chat = ({ chatInfo, projectData }) => {
       setContent('');
     } catch (err) {
       setError(err.response?.data ? JSON.stringify(err.response.data) : err.message);
+    } finally {
+      setSending(false); // Re-enable the submit button
     }
   };
 
   return (
-    <div className="w-[60vw] mx-auto p-8 bg-gray-500 shadow-lg rounded-lg">
+    <div className="w-full  mx-1 sm:mx-auto p-1  sm:p-8 bg-gray-300 shadow-lg rounded-lg">
       {loading && (
         <div className="flex justify-center items-center h-16">
           <div className="w-8 h-8 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
         </div>
       )}
-
-      {error && (
-        <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center">
-          {error}
-        </div>
-      )}
-
-      <h2 className="text-2xl font-bold mb-4">Talk to {user.role === 'student' ? "Supervisor" : "Student Lead"}</h2>
-
-      <div className="chat-box mb-6 p-4 bg-gray-50 rounded-lg shadow-sm max-h-96 overflow-y-auto">
+      {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center">{error}</div>}
+      <h2 className="text-lg sm:text-2xl font-bold mb-4">Talk to {user.role === 'student' ? 'Supervisor' : 'Student Lead'}</h2>
+      <div className="chat-box mb-6 p-1 sm:p-4 bg-gray-500 rounded-lg shadow-sm max-h-96 overflow-y-auto">
         {messages.length > 0 ? (
           messages.map((message) => (
-            <div key={message.id} className={`message mb-4 p-3 rounded-md border  ${message.user?.role === 'student' ? "text-right bg-green-100" : "text-left bg-yellow-100"}`}>
-              <p className={`text-gray-900 mb-4 text-lg`}>
-                {message.content}
-              </p>
+            <div key={message.id} className={`message mb-4 px-3 py-1 rounded-md border ${message.user?.role === 'student' ? "text-right bg-green-100" : "text-left bg-yellow-100"}`}>
+              <p className="text-gray-900 mb-4 text-lg">{message.content}</p>
               <hr />
-              <p className="text-sm text-gray-500">
-                Sent at {new Date(message.created_at).toLocaleString()} by @{message.user?.username}
-              </p>
+              <p className="text-sm text-gray-900">Sent at {new Date(message.created_at).toLocaleString()} by @{message.user?.username}</p>
             </div>
           ))
         ) : (
           <p className="text-center text-gray-600">No messages yet.</p>
         )}
       </div>
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="grid border border-green-900 rounded-sm sm:rounded-md grid-cols-6 gap-1 sm:gap-4">
         <textarea
-          className="message-input p-3 border border-gray-300 rounded-md"
+          className="message-input p-1 sm:p-3 border col-span-5 focus:outline-none border-gray-300 rounded-md"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Type your message here"
-          rows="3"
+          rows="1"
+          required
         />
         <button
           type="submit"
-          className="submit-button w-[20vw] font-semibold py-2 px-6 bg-green-500 rounded-md hover:bg-blue-600 transition duration-200"
+          className="submit-button w-full font-semibold sm:text-md text-sm py-2 px-0 sm:px-4 bg-green-500 rounded-sm sm:rounded-md hover:bg-blue-600 transition duration-200"
+          disabled={sending} // Disable button while sending
         >
-          Send
+          {sending ? 'Sending...' : 'Send'} {/* Change button text based on sending state */}
         </button>
       </form>
     </div>

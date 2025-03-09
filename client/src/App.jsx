@@ -24,8 +24,8 @@ import UpdateProjectMemberDetails from './pages/StudentMembers/UpdateProjectMemb
 
 import CreateProjectChapters from './pages/ViewProject/CreateProjectChapters';
 import ViewProjectChapters from './pages/ViewProject/ViewProjectChapters';
+import DeleteChapter from './pages/ViewProject/DeleteChapter';
 import ViewProjectChapterDetails from './pages/ViewProject/ViewProjectChapterDetails';
-import EditProjectChapter from './pages/ViewProject/EditProjectChapter';
 
 function App() {
   return (
@@ -47,9 +47,10 @@ function App() {
              {/* project chapters. */}
             <Route path="/create_project_chapters" element={<PrivateRoute><CreateProjectChapters /></PrivateRoute>} />
             <Route path="/view_project_chapters/:user_id" element={<PrivateRoute><ViewProjectChapters /></PrivateRoute>} />
-            <Route path="/view_project_chapter/:chapter_id" element={<ViewProjectChapterDetails />} />
-            <Route path="/edit_project_chapter/:chapter_id" element={<PrivateRoute><EditProjectChapter /></PrivateRoute>} />
-
+            {/* Project chapter details */}
+            <Route path="/view_project_detail/:fileId" element={<PrivateRoute><ViewProjectChapterDetails /></PrivateRoute>} />
+            {/* Delete chapter */}
+            <Route path="/chapters_delete/:fileId" element={<DeleteChapter />} />
 
               {/* project members */}
             <Route path="/one_member_details/:member_id"  element={<PrivateRoute><ViewOneMemberDetails /></PrivateRoute>} />

@@ -23,7 +23,7 @@ const ViewMembers = () => {
       try {
         // Make the GET request to the Django API with the proper Authorization headers
         const response = await axios.get(
-          `http://127.0.0.1:8000/members/view/${user.user_id}/`, 
+          `http://localhost:8000/members/view/${user.user_id}/`, 
           {
             headers: {
               Authorization: `Bearer ${authTokens.access}`,
@@ -57,7 +57,7 @@ const ViewMembers = () => {
 
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white  rounded-lg">
+    <div className="w-full  mx-1 sm:mx-auto p-1 sm:p-8 bg-white  rounded-lg">
       <h2 className="text-xl font-bold mb-4 text-center">Project Collaborative Members</h2>
 
       {/* Display student lead details */}

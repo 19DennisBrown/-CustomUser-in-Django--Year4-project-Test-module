@@ -1,152 +1,133 @@
-
-
-
-
 import { useState, useContext } from "react";
-import AuthContext from "../../context/AuthContext";
-import { useNavigate, Link, useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import AuthContext from "../../context/AuthContext"; // Import the AuthContext
+import Header from "../../components/Header";
 
 const CreateProjectChapters = () => {
-    const { user_id } = useParams();
-    const { authTokens, user } = useContext(AuthContext);
-    const navigate = useNavigate();
+  const { authTokens } = useContext(AuthContext); // Access authTokens from AuthContext
+  const navigate = useNavigate(); // Initialize useNavigate
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [chapterName, setChapterName] = useState("");
+  const [name, setName] = useState("");
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const [chapters, setChapters] = useState([
-        { chapter_name: "", chapter_title: "" },
-    ]);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
 
-    // Handle input changes
-    const handleChange = (index, e) => {
-        const newChapters = [...chapters];
-        newChapters[index][e.target.name] = e.target.value;
-        setChapters(newChapters);
-    };
+  const handleUpload = async () => {
+    setLoading(true);
+    if (!selectedFile || !chapterName || !name) {
+      setUploadStatus("Please fill all fields and select a file.");
+      return;
+    }
 
-    // Add a new chapter field
-    const addChapter = () => {
-        setChapters([...chapters, { chapter_name: "", chapter_title: "" }]);
-    };
+    // Check file size (2MB limit)
+    if (selectedFile.size > 2 * 1024 * 1024) {
+      setUploadStatus("File size exceeds 2MB.");
+      return;
+    }
 
-    // Remove a Chapter field
-    const removeChapter = (index) => {
-        const newChapters = chapters.filter((_, i) => i !== index);
-        setChapters(newChapters);
-    };
+    const formData = new FormData();
+    formData.append("chapter_name", chapterName);
+    formData.append("name", name);
+    formData.append("file", selectedFile);
 
-    // Handle form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        // Updated request data structure
-        const requestData = {
-            chapters: chapters  // No user field added here
-        };
-
-        const url = "http://127.0.0.1:8000/chapters/create/";
-
-        try {
-            await axios.post(url, requestData, {
-                headers: {
-                    Authorization: `Bearer ${authTokens.access}`,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            navigate(`/view_project/${user_id}`);
-            
-        } catch (err) {
-            if (err.response && err.response.data) {
-                // Handle field-specific errors if needed
-                setError(
-                    err.response.data.non_field_errors?.join(", ") || 
-                    JSON.stringify(err.response.data) || 
-                    "An error occurred."
-                );
-            } else {
-                setError("A network error occurred. Please try again.");
-            }
-        } finally {
-            setLoading(false);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/chapters/files/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authTokens.access}`, // Include the authorization token
+          },
         }
-    };
+      );
 
-    // ... rest of the component remains the same ...
-    // (The JSX rendering code doesn't need changes)
+      if (response.status === 201) {
+        // 201 Created is a common status code for successful uploads
+        setUploadStatus("File uploaded successfully!");
+        setTimeout(() => {
+          navigate(-1); // Navigate to /home after a successful upload
+        }, 2000); // Wait 2 seconds before navigating
+      } else {
+        setUploadStatus("Failed to upload file. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setLoading(false);
+      // Display specific error message from the backend if available
+      if (error.response && error.response.data && error.response.data.error) {
+        setUploadStatus(`Error: ${error.response.data.error}`);
+      } else {
+        setUploadStatus("Failed to upload file. Please try again.");
+      }
+    }
+  };
 
-    return (
-        <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center">Add Project Chapters</h2>
+  const handleCancel = () => {
+    navigate(-1);
+  };
 
-            {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+  return (
+    <div className="w-full p-4 bg-gray-100 rounded-lg shadow-md">
+      <Header />
 
-            <form onSubmit={handleSubmit}>
-                {chapters.map((chapter, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded-lg">
-                        <div className="mb-2">
-                            <label className="block text-gray-700">Chapter name/number</label>
-                            <input
-                                type="text"
-                                name="chapter_name"
-                                value={chapter.chapter_name}
-                                onChange={(e) => handleChange(index, e)}
-                                className="w-full px-3 py-2 border rounded-lg"
-                                required
-                            />
-                        </div>
+      <section className=" sm:px-24 px-4">
+        <h1 className="text-2xl font-bold mb-4">File Upload</h1>
+        <input
+          type="text"
+          placeholder="Chapter Name/  eg One "
+          value={chapterName}
+          onChange={(e) => setChapterName(e.target.value)}
+          className="mb-4 p-2 border border-gray-300 rounded w-full"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Chapter title"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="mb-4 p-2 border border-gray-300 rounded w-full"
+          required
+        />
+        <input
+          type="file"
+          onChange={handleFileChange}
+          className="mb-4 p-2 border border-green-300 rounded w-full"
+          required
+        />
+        <div className="flex gap-4">
+          <button
+            onClick={handleUpload}
+            disabled={loading}
+            className={`w-full py-1  font-semibold rounded-md text-green-900 transition flex justify-center items-center ${
+              loading
+                ? "bg-gray-400"
+                : "bg-blue-500 hover:bg-blue-600 hover:opacity-80"
+            }`}
+          >
+            {loading && (
+              <span className="w-4 h-4 border-2 border-t-2 border-green-500 rounded-full animate-spin mr-2"></span>
+            )}
+            {loading ? "Uploading..." : "Upload."}
+          </button>
 
-                        <div className="mb-2">
-                            <label className="block text-gray-700">Chapter Title</label>
-                            <input
-                                type="text"
-                                name="chapter_title"
-                                value={chapter.chapter_title}
-                                onChange={(e) => handleChange(index, e)}
-                                className="w-full px-3 py-2 border rounded-lg"
-                                required
-                            />
-                        </div>
-
-                        {chapters.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={() => removeChapter(index)}
-                                className="mt-2 px-4 py-2 text-white bg-red-500 rounded-lg"
-                            >
-                                Remove
-                            </button>
-                        )}
-                    </div>
-                ))}
-
-                <section className="grid grid-cols-2 mt-8 gap-8">
-                    <button
-                        type="button"
-                        onClick={addChapter}
-                        className="w-full bg-green-500 text-white py-2 rounded-lg mb-4"
-                    >
-                        + Add Another Chapter/s
-                    </button>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-600 text-white py-2 mb-4 rounded-lg hover:bg-blue-700"
-                        disabled={loading}
-                    >
-                        {loading ? "Saving chapters..." : "Submit Chapters"}
-                    </button>
-                </section>
-            </form>
-
-            <button className="border-2 border-green-600 rounded-lg py-1 px-4 my-4">
-                <Link to={`/view_project/${user_id}`}>Cancel</Link>
-            </button>
+          <button
+            onClick={handleCancel}
+            disabled={loading}
+            className="w-full py-1 font-semibold border border-gray-600 text-blue-900 rounded-md hover:bg-gray-700"
+          >
+            Cancel
+          </button>
         </div>
-    );
+      </section>
+      {uploadStatus && <p className="mt-4 text-gray-700">{uploadStatus}</p>}
+    </div>
+  );
 };
 
 export default CreateProjectChapters;

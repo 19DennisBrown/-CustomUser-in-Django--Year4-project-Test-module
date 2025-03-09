@@ -5,6 +5,7 @@ import { useState, useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import { useNavigate, Link,useParams, } from "react-router-dom";
 import axios from "axios";
+import Header from '../components/Header'
 
 const AddMember = () => {
     const { user_id } = useParams();
@@ -49,7 +50,7 @@ const AddMember = () => {
             })),
         };
 
-        const url = "http://127.0.0.1:8000/members/create/";
+        const url = "http://localhost:8000/members/create/";
 
         try {
             await axios.post(url, requestData, {
@@ -72,14 +73,15 @@ const AddMember = () => {
     };
 
     return (
-        <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center">Add Project Members</h2>
+        <div className="w-full mx-auto  p-6 bg-white shadow-lg rounded-lg">
+            <Header/>
 
             {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="space-y-4 sm:px-24 px-4">
                 {participants.map((participant, index) => (
-                    <div key={index} className="mb-4 p-4 border rounded-lg">
+                    <fieldset key={index} className="mb-4 p-4 px-2 sm:px-8 border rounded-lg">
+                        <legend className="text-xl font-bold mb-4 px-2 text-center">Add Project Members</legend>
                         <div className="mb-2">
                             <label className="block text-gray-700">First Name</label>
                             <input
@@ -148,22 +150,22 @@ const AddMember = () => {
                                 Remove
                             </button>
                         )}
-                    </div>
+                    </fieldset>
                 ))}
 
 
-                <section className="grid grid-cols-2 gap-8">
+                <section className="grid grid-cols-2 mt-8 gap-8">
                     <button
                         type="button"
                         onClick={addParticipant}
-                        className="w-full bg-green-500 text-white py-2 rounded-lg mb-4"
+                        className="w-full bg-green-500 font-semibold text-blue-900 py-2 rounded-lg "
                     >
                         + Add Another Member
                     </button>
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                        className="w- border border-blue-600 text-green-900 font-semibold py-2 rounded-lg hover:bg-blue-700"
                         disabled={loading}
                     >
                         {loading ? "Adding..." : "Submit Members"}

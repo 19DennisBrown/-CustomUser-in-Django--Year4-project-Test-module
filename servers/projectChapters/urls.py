@@ -1,16 +1,12 @@
-
 from django.urls import path
-from  . import views
-
-
-
-
+from .views import FileListCreateView, FileListView, FileDeleteView, ChapterDetailView
 
 urlpatterns = [
-     path("create/", views.add_project_chapters, name="create_members"),
-     path("view/<int:user_id>/", views.ProjectChaptersDetailView.as_view(), name="view_members"),
-     path('delete/<int:chapter_id>/', views.delete_project_chapter, name='delete_project_chapter'),
-     path('update/<int:chapter_id>/', views.update_project_chapter, name='update_project_chapter'),
+    path('files/', FileListCreateView.as_view(), name='file-list-create'),
+    
+    path('files_list/<int:user_id>/', FileListView.as_view(), name='file-list'),
 
-     path('one_chapter/view/<int:chapter_id>/', views.get_specific_chapter, name='get_specific_chapter'),
+    path("files/<int:fileId>/", ChapterDetailView.as_view(), name="chapter-detail"),
+
+    path('files/delete/<int:pk>/', FileDeleteView.as_view(), name='file-delete'),
 ]

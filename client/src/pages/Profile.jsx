@@ -1,22 +1,13 @@
-
-
-
-
-
-
-
-
-
-
-
-
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import axios from "axios";
+import Header from '../components/Header'
 
 const Profile = () => {
     const { authTokens, user } = useContext(AuthContext);
+    const navigate = useNavigate();
+    
     const [profile, setProfile] = useState({
         first_name: "",
         last_name: "",
@@ -24,19 +15,19 @@ const Profile = () => {
         programme: "", // For Student Lead
         supervisor: "", // For Student Lead (stores ID)
     });
-    const [supervisors, setSupervisors] = useState([]); // Store fetched supervisors
-    const navigate = useNavigate();
 
-    // Fetch supervisors when user is a student
+    const [supervisors, setSupervisors] = useState([]); // Store fetched supervisors
+    const [loading, setLoading] = useState(false); // Track form submission status
+
+    // Fetch supervisors when the user is a student
     useEffect(() => {
         if (user.role === "student") {
             axios
-                .get("http://127.0.0.1:8000/user/supervisors/", {
+                .get("http://localhost:8000/user/supervisors/", {
                     headers: { Authorization: `Bearer ${authTokens.access}` },
                 })
                 .then((response) => {
                     setSupervisors(response.data);
-                    console.log("Fetched supervisors:", response.data);
                 })
                 .catch((error) => {
                     console.error("Error fetching supervisors:", error);
@@ -47,11 +38,9 @@ const Profile = () => {
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
-        // console.log(`Field: ${name}, Value: ${value}`); // Debugging: See if the event fires correctly
-
         setProfile((prev) => ({
             ...prev,
-            [name]: name === "supervisor" ? value : value, // Keep `value` as a string for `<select>`
+            [name]: value,
         }));
     };
 
@@ -60,9 +49,11 @@ const Profile = () => {
         e.preventDefault();
 
         if (!authTokens) {
-            navigate("/login");
+            navigate("/");
             return;
         }
+
+        setLoading(true); // Disable button and change text to "Processing..."
 
         const requestData = {
             first_name: profile.first_name,
@@ -72,11 +63,10 @@ const Profile = () => {
                 : { programme: profile.programme, supervisor: profile.supervisor }),
         };
 
-        console.log("Submitting profile:", requestData);
-
-        const url = user.role === "supervisor"
-            ? "http://127.0.0.1:8000/user/create-profile/supervisor/"
-            : "http://127.0.0.1:8000/user/create-profile/studentlead/";
+        const url =
+            user.role === "supervisor"
+                ? "http://localhost:8000/user/create-profile/supervisor/"
+                : "http://localhost:8000/user/create-profile/studentlead/";
 
         axios
             .post(url, requestData, {
@@ -86,30 +76,27 @@ const Profile = () => {
                 },
             })
             .then(() => {
-                // alert("Profile created successfully!");
                 navigate("/home");
             })
             .catch((error) => {
-                console.error(
-                    "Error creating profile:",
-                    error.response ? error.response.data : error
-                );
-                console.log(
-                    `Error: ${
-                        error.response
-                            ? JSON.stringify(error.response.data)
-                            : "Unknown error"
-                    }`
-                );
+                console.error("Error creating profile:", error.response ? error.response.data : error);
+                setLoading(false); // Re-enable button on error
             });
     };
 
-    const handleCancel = () => navigate("/home");
+    const handleCancel = () => navigate(-1);
 
     return (
-        <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 text-center">Create Your Profile</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="w-full mx-auto p-6 bg-white rounded-lg shadow-lg">
+            <Header/>
+            <h2 className="text-xl font-bold mb-4 text-center">Create Your Profile</h2>
+            <form onSubmit={handleSubmit} className="space-y-4 sm:px-16 px-4">
+
+                {/* names */}
+
+                <section className="grid grid-cols-2 gap-8">
+
+
                 {/* First Name */}
                 <div className="flex flex-col">
                     <label className="text-sm font-semibold text-gray-700" htmlFor="first_name">
@@ -141,7 +128,7 @@ const Profile = () => {
                         required
                     />
                 </div>
-
+                </section>
                 {/* Supervisor Role - Department Input */}
                 {user.role === "supervisor" && (
                     <div className="flex flex-col">
@@ -191,7 +178,7 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select a Supervisor</option>
-                                {supervisors?.length > 0 ? (
+                                {supervisors.length > 0 ? (
                                     supervisors.map((sup) => (
                                         <option key={sup.user_id} value={sup.user_id}>
                                             {sup.first_name} {sup.last_name} - {sup.department}
@@ -208,15 +195,24 @@ const Profile = () => {
                 {/* Buttons */}
                 <div className="flex space-x-4">
                     <button
-                        type="submit"
-                        className="w-full py-2 mt-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      type="submit"
+                      disabled={loading}
+                      className={`w-full py-1  font-semibold rounded-md text-green-900 transition flex justify-center items-center ${
+                        loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600 hover:opacity-80"
+                      }`}
                     >
-                        Create Profile
+                      {loading && (
+                        <span className="w-4 h-4 border-2 border-t-2 border-green-500 rounded-full animate-spin mr-2"></span>
+                      )}
+                      {loading ? "Processing..." : "Create profile."}
                     </button>
+
+                    {/* Cancel button */}
                     <button
                         type="button"
+                        disabled={loading}
                         onClick={handleCancel}
-                        className="w-full py-2 mt-4 bg-gray-600 font-semibold text-white rounded-md hover:bg-gray-700"
+                        className="w-full py-1 font-semibold border border-gray-600 text-blue-900 rounded-md hover:bg-gray-700"
                     >
                         Cancel
                     </button>

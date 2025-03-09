@@ -17,7 +17,7 @@ const OneSupervisor = () => {
     }
 
     // Fetch supervisor profile data for the logged-in user
-    const url = `http://127.0.0.1:8000/user/onesupervisor/${user.user_id}/`; // Use the logged-in user's ID
+    const url = `http://localhost:8000/user/onesupervisor/${user.user_id}/`; // Use the logged-in user's ID
     axios
       .get(url, {
         headers: { Authorization: `Bearer ${authTokens.access}` },

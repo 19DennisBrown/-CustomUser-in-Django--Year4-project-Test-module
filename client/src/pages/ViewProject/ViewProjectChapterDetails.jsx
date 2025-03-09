@@ -1,106 +1,113 @@
-
-
-
-import { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../../context/AuthContext';
+import { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import AuthContext from "../../context/AuthContext";
+import Header from '../../components/Header'
 
 const ViewProjectChapterDetails = () => {
+  const { fileId } = useParams(); // Get the fileId from the URL
   const { authTokens } = useContext(AuthContext);
-  const { chapter_id } = useParams();
-  const [chapter, setChapter] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [chapter, setChapter] = useState(null); // State to store chapter details
+  const [loading, setLoading] = useState(true); // State to handle loading
+  const [error, setError] = useState(null); // State to handle errors
 
-  // Fetch chapter details on component mount
+  // Fetch chapter details when the component mounts
   useEffect(() => {
-    const fetchChapterDetails = async () => {
+    const fetchChapter = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/chapters/one_chapter/view/${chapter_id}/`,
+          `http://localhost:8000/chapters/files/${fileId}/`,
           {
-            headers: {
-              Authorization: `Bearer ${authTokens.access}`,
-            },
+            headers: { Authorization: `Bearer ${authTokens.access}` },
           }
         );
-        setChapter(response.data);
+        setChapter(response.data); // Set the chapter details
       } catch (err) {
-        setError(err.response ? err.response.data.error : 'An error occurred');
+        setError(err.response ? err.response.data.error : "An error occurred");
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading
       }
     };
 
-    fetchChapterDetails();
-  }, [chapter_id, authTokens]);
+    fetchChapter();
+  }, [fileId, authTokens]);
 
-  // Handle delete operation
-  const handleDelete = async () => {
-    try {
-      await axios.delete(
-        `http://127.0.0.1:8000/chapters/delete/${chapter_id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${authTokens.access}`,
-          },
-        }
-      );
-      // Redirect to the chapters list after deletion
-      navigate('/home');
-    } catch (err) {
-      setError(err.response ? err.response.data.error : 'An error occurred');
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-16 h-16 border-t-4 border-green-600 border-solid rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
-  // Handle edit operation
-  const handleEdit = () => {
-    navigate(`/edit_project_chapter/${chapter_id}`); // Navigate to the edit page
-  };
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500">Error: {error}</p>
 
-  // Loading state
-  if (loading) return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
-    </div>
-  );
+        <button
+          onClick={() => navigate(-1)} // Go back to the previous page
+          className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
-  // Error state
-  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+  if (!chapter) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-600">Chapter not found.</p>
+        <button
+          onClick={() => navigate(-1)} // Go back to the previous page
+          className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg">
-      <h2 className="text-xl font-bold mb-4 text-center">Chapter Details</h2>
-      {chapter ? (
-        <div className="space-y-4">
-          <p><strong>Name:</strong> {chapter.chapter_name}</p>
-          <p><strong>Title:</strong> {chapter.chapter_title}</p>
-          <p><strong>Date Created:</strong> {new Date(chapter.date_created).toLocaleDateString()}</p>
-
-          <div className="flex gap-2">
-            <button
-              onClick={handleEdit}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Delete
-            </button>
-          </div>
-
-          <Link to="/home" className="text-blue-500 underline">
-            Exit
-          </Link>
+    <div className="p-6 max-w-4xl mx-auto">
+      <Header />
+      <h1 className="text-3xl font-bold text-center mb-8">Chapter Details</h1>
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-2">{chapter.chapter_name}</h2>
+        <p className="text-gray-600 mb-4">{chapter.name}</p>
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            Uploaded at: {new Date(chapter.uploaded_at).toLocaleString()}
+          </p>
+          <a
+            href={chapter.file}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Download
+          </a>
         </div>
-      ) : (
-        <p className="text-gray-600">No chapter details found.</p>
-      )}
+
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <button
+            onClick={() => navigate(`/chapters_delete/${chapter.id}`)} 
+            className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+          >
+            Delete
+          </button>
+
+          
+          <button
+            onClick={() => navigate(-1)} // Go back to the previous page
+            className="mt-4 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 w-full"
+          >
+            Go Back
+          </button>
+        </section>
+      </div>
     </div>
   );
 };

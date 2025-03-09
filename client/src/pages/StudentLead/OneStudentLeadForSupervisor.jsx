@@ -1,47 +1,40 @@
-
-
-
-
-
 import { useEffect, useState, useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Chat from "../Chat/Chat";
+import ViewProjectChapters from "../ViewProject/ViewProjectChapters";
+import Footer from "../../components/Footer";
 
 const StudentLeadForSupervisor = () => {
+  const navigate = useNavigate();
   const { user_id } = useParams();
   const { authTokens, user } = useContext(AuthContext);
-  
+
   const [information, setData] = useState(null);
   const [infos, setInfos] = useState(null);
   const [projectMembers, setMember] = useState([]);
   const [chatData, setChatData] = useState([]);
-  
-  // We'll use a single loading state for simplicity.
   const [loading, setLoading] = useState(true);
-  // Instead of blocking the UI on error, we store the error message to display it in a banner.
   const [error, setError] = useState(null);
 
   // Fetch student lead information.
   useEffect(() => {
-    const url = `http://127.0.0.1:8000/user/onestudentlead/${user_id}/`;
+    const url = `http://localhost:8000/user/onestudentlead/${user_id}/`;
     axios
       .get(url, {
         headers: { Authorization: `Bearer ${authTokens.access}` },
       })
       .then((response) => {
         setData(response.data);
-        // Set the student lead's user ID so we can later fetch project members.
-        setInfos(response.data.student_lead.user_id);
-        setChatData(response.data.student_lead)
-        // console.log(response.data.student_lead)
-
+        setInfos(response.data.student_lead.user_id); // Set the student lead's user ID
+        setChatData(response.data.student_lead);
       })
       .catch((err) => {
-        // Append the error message to our error state.
         setError((prev) =>
-          prev ? prev + " " + (err.response?.data?.detail || err.message) : err.response?.data?.detail || err.message
+          prev
+            ? prev + " " + (err.response?.data?.detail || err.message)
+            : err.response?.data?.detail || err.message
         );
       })
       .finally(() => {
@@ -57,19 +50,19 @@ const StudentLeadForSupervisor = () => {
   }, [infos, authTokens]);
 
   const fetchingMembers = (info) => {
-    const url = `http://127.0.0.1:8000/members/view/${info}/`;
+    const url = `http://localhost:8000/members/view/${info}/`;
     axios
       .get(url, {
         headers: { Authorization: `Bearer ${authTokens.access}` },
       })
       .then((response) => {
         setMember(response.data.members);
-        // setChatData(response.data.student_lead)
-        // console.log(response.data.student_lead)
       })
       .catch((err) => {
         setError((prev) =>
-          prev ? prev + " " + (err.response?.data?.detail || err.message) : err.response?.data?.detail || err.message
+          prev
+            ? prev + " " + (err.response?.data?.detail || err.message)
+            : err.response?.data?.detail || err.message
         );
       })
       .finally(() => {
@@ -99,14 +92,14 @@ const StudentLeadForSupervisor = () => {
           <h2 className="text-3xl font-semibold mb-6 text-center text-green-600">
             Student/-Leads More Data:
           </h2>
-          {/* STUDEND LEAD INFO */}
+
+          {/* STUDENT LEAD INFO */}
           <div className="grid text-center">
             {information ? (
               <div key={information.user_id} className="p-4 rounded-md">
                 <h4 className="text-xl font-semibold my-2">
                   <span className="text-green-500 font-semibold">Student Lead:</span>{" "}
-                  {information.student_lead.first_name} {information.student_lead.last_name}{" "}
-                  
+                  {information.student_lead.first_name} {information.student_lead.last_name}
                 </h4>
                 <h4 className="text-xl font-semibold my-2">
                   <span className="text-green-500 font-semibold">Programme: </span>
@@ -190,16 +183,26 @@ const StudentLeadForSupervisor = () => {
           </div>
 
           <div className="flex flex-col items-center mt-8">
-            <button className="border-2 border-yellow-400 px-8 rounded-xl py-1 text-lg text-green-500 font-semibold mb-4">
-              <Link to="/home">..Exit</Link>
+            <button
+              onClick={() => navigate(-1)}
+              className="border border-green-400 px-8 rounded-xl py-1 text-md text-gray-500 font-semibold mb-4"
+            >
+              ..homepage
             </button>
-            {/* Render the Chat component below the student lead info. */}
 
-            {/* chat */}
+            {/* Project Chapters of student */}
+            <section className="grid">
+              <ViewProjectChapters studentUserId={infos} />
+            </section>
+
+            {/* Chat */}
             <Chat chatInfo={chatData} UserId={user.user_id} />
           </div>
         </>
       )}
+
+
+      <Footer/>
     </div>
   );
 };

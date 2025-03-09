@@ -21,7 +21,7 @@ const ViewProject = () => {
         const fetchProject = async () => {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/user/view_project/${user.user_id}/`,
+                    `http://localhost:8000/user/view_project/${user.user_id}/`,
                     {
                         headers: { Authorization: `Bearer ${authTokens.access}` },
                     }
