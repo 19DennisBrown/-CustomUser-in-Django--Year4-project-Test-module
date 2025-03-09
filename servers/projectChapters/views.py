@@ -1,8 +1,13 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from supabase import create_client
+import os
 from .models import File
 from .serializers import FileSerializer
+
 
 # class FileListCreateView(generics.ListCreateAPIView):
 #     queryset = File.objects.all()
@@ -31,14 +36,6 @@ from .serializers import FileSerializer
 #         # Serialize the instance and return the response
 #         serializer = self.get_serializer(file_instance)
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-from rest_framework import generics, status
-from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.response import Response
-from supabase import create_client
-import os
-from .models import File
-from .serializers import FileSerializer
-
 class FileListCreateView(generics.ListCreateAPIView):
     queryset = File.objects.all()
     serializer_class = FileSerializer
@@ -47,7 +44,7 @@ class FileListCreateView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         # Extract data from the request
         chapter_name = request.data.get('chapter_name', '')
-        name = request.data.get('name', 'Untitled File')  # Default name if not provided
+        name = request.data.get('name', 'Untitled File')
         file = request.FILES.get('file')  # Use request.FILES for file uploads
 
         # Validate required fields
@@ -86,12 +83,6 @@ class FileListCreateView(generics.ListCreateAPIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from .models import File
-from .serializers import FileSerializer
-
 class FileListView(generics.ListAPIView):
     serializer_class = FileSerializer
     permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access
@@ -100,12 +91,6 @@ class FileListView(generics.ListAPIView):
         user_id = self.kwargs['user_id']  # Get user_id from the URL
         return File.objects.filter(user_id=user_id)  # Filter files by user_id
 
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from .models import File
-from .serializers import FileSerializer
 
 class FileDeleteView(generics.DestroyAPIView):
     queryset = File.objects.all()
@@ -121,13 +106,7 @@ class FileDeleteView(generics.DestroyAPIView):
             )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
- 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import File  # Replace with your actual model
-from .serializers import FileSerializer  # Replace with your actual serializer
 
 class ChapterDetailView(APIView):
     def get(self, request, fileId, *args, **kwargs):
