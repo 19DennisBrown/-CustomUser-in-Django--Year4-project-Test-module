@@ -56,7 +56,7 @@ const ProfileView = () => {
 
   return (
     <div className="w-full mx-auto p-2 sm:p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold mb-6 text-center text-green-600">Student Lead Information</h2>
+      <h2 className="text-xl font-semibold mb-6 text-center text-green-600">Student Lead Information</h2>
 
       {profileData ? (
         <div className="p-4  rounded-md  text-center">
@@ -78,7 +78,7 @@ const ProfileView = () => {
           <p className="text-gray-600"><span className="font-semibold">Gmail</span>: {profileData.student_lead.user.email || "N/A"}</p>
         </div>
       ) : (
-        <p className="text-center text-gray-500"> </p>
+        <p className="text-center text-gray-500">  </p>
       )}
 
     </div>

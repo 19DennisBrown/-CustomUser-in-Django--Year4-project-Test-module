@@ -103,7 +103,9 @@ const Chat = ({ chatInfo, projectData }) => {
   };
 
   return (
-    <div className="w-full  mx-1 sm:mx-auto p-1  sm:p-8 bg-gray-300 shadow-lg rounded-lg">
+
+    // updated
+    <div className="w-full max-w-5xl mx-1 sm:mx-auto p-1  sm:p-8 bg-gray-300 shadow-lg rounded-lg">
       {loading && (
         <div className="flex justify-center items-center h-16">
           <div className="w-8 h-8 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
@@ -114,7 +116,7 @@ const Chat = ({ chatInfo, projectData }) => {
       <div className="chat-box mb-6 p-1 sm:p-4 bg-gray-500 rounded-lg shadow-sm max-h-96 overflow-y-auto">
         {messages.length > 0 ? (
           messages.map((message) => (
-            <div key={message.id} className={`message mb-4 px-3 py-1 rounded-md border ${message.user?.role === 'student' ? "text-right bg-green-100" : "text-left bg-yellow-100"}`}>
+            <div key={message.id} className={`message mb-4 px-3 py-1 rounded-md  ${message.user?.role === 'student' ? "text-right bg-green-100" : "text-left bg-yellow-100"}`}>
               <p className="text-gray-900 mb-4 text-lg">{message.content}</p>
               <hr />
               <p className="text-sm text-gray-900">Sent at {new Date(message.created_at).toLocaleString()} by @{message.user?.username}</p>

@@ -6,11 +6,12 @@
 
 
 import { useContext, useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
 
 const ViewProject = () => {
+    const navigate = useNavigate();
     const { authTokens, user } = useContext(AuthContext);
     const { user_id } = useParams(); // Get user_id from the URL
     const [projectData, setProjectData] = useState(null);
@@ -45,7 +46,7 @@ const ViewProject = () => {
             <h2 className="text-2xl font-bold mb-4 text-center text-green-600">Project Details</h2>
 
             {projectData?.projects.length > 0 ? (
-                <div className="">
+                <div className=" cursor-pointer" onClick={()=>navigate(`/view_project/${user.user_id}`)} >
                     
                     <p><strong><span className="text-xl font-semibold">Student Lead:</span></strong> {projectData.student_lead.first_name} {projectData.student_lead.last_name}</p>
 

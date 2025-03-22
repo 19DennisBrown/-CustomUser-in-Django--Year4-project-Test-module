@@ -26,6 +26,7 @@ import CreateProjectChapters from './pages/ViewProject/CreateProjectChapters';
 import ViewProjectChapters from './pages/ViewProject/ViewProjectChapters';
 import DeleteChapter from './pages/ViewProject/DeleteChapter';
 import ViewProjectChapterDetails from './pages/ViewProject/ViewProjectChapterDetails';
+import ViewProfile from './pages/Profile/ViewProfile';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
 
             {/* Profile */}
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+            <Route path="/view_profile" element={<PrivateRoute><ViewProfile /></PrivateRoute>} />
 
             {/* Project */}
             <Route path="/create_project" element={<PrivateRoute><CreateProject /></PrivateRoute>} />

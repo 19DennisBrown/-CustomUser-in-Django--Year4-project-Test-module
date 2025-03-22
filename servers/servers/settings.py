@@ -149,10 +149,10 @@ WSGI_APPLICATION = 'servers.wsgi.application'
 # }
 
 # SUPABASE
-import os
-from dotenv import load_dotenv
+# import os
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')

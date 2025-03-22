@@ -168,7 +168,7 @@ export const AuthProvider = ({ children }) => {
                 updateToken();
                 return prevTokens;
             });
-        }, 1000 * 60 * 24); // Refresh every 24 minutes
+        }, 1000 * 60 * 14); // Refresh every 14 minutes
 
         return () => clearInterval(interval);
     }, []);

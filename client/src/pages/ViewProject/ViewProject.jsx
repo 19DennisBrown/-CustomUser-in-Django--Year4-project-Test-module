@@ -27,7 +27,8 @@ const ViewProject = () => {
         );
         setProjectData(response.data);
       } catch (err) {
-        setError(err.response ? err.response.data.error : "An error occurred");
+        // setError(err.response ? err.response.data.error : "An error occurred");
+        setError("Create profile to view more...");
       } finally {
         setLoading(false);
       }
@@ -42,11 +43,11 @@ const ViewProject = () => {
         <div className="w-16 h-16 border-t-4 border-green-600 border-solid rounded-full animate-spin"></div>
       </div>
     );
-  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+  if (error) return <p className="text-center text-gray-500">{error}</p>;
 
   return (
     <div className=" mx-auto px-6 sm:px-24 bg-white  rounded-lg">
-        <Header />
+        {/* <Header /> */}
       <h2 className="text-xl font-bold mb-4 text-center text-green-600">
         Project Details
       </h2>
@@ -95,7 +96,7 @@ const ViewProject = () => {
       {/* Chat */}
       <Chat projectData={projectData} UserId={user.user_id} />
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

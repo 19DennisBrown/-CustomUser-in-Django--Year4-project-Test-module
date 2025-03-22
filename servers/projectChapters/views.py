@@ -9,78 +9,78 @@ from .models import File
 from .serializers import FileSerializer
 
 
-# class FileListCreateView(generics.ListCreateAPIView):
-#     queryset = File.objects.all()
-#     serializer_class = FileSerializer
-#     parser_classes = (MultiPartParser, FormParser)  # Add parsers for file uploads
-
-#     def create(self, request, *args, **kwargs):
-#         # Extract data from the request
-#         chapter_name = request.data.get('chapter_name', '')
-#         name = request.data.get('name', 'Untitled File')  # Default name if not provided
-#         file = request.data.get('file')
-
-#         # Validate required fields
-#         if not file:
-#             return Response({"error": "File is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Create a new File instance
-#         file_instance = File(
-#             user=request.user,  # Automatically set the user to the authenticated user
-#             chapter_name=chapter_name,
-#             name=name,
-#             file=file
-#         )
-#         file_instance.save()
-
-#         # Serialize the instance and return the response
-#         serializer = self.get_serializer(file_instance)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 class FileListCreateView(generics.ListCreateAPIView):
     queryset = File.objects.all()
     serializer_class = FileSerializer
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser)  # Add parsers for file uploads
 
     def create(self, request, *args, **kwargs):
         # Extract data from the request
         chapter_name = request.data.get('chapter_name', '')
-        name = request.data.get('name', 'Untitled File')
-        file = request.FILES.get('file')  # Use request.FILES for file uploads
+        name = request.data.get('name', 'Untitled File')  # Default name if not provided
+        file = request.data.get('file')
 
         # Validate required fields
         if not file:
             return Response({"error": "File is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Initialize Supabase client
-        supabase_url = os.getenv('SUPABASE_URL')
-        supabase_key = os.getenv('SUPABASE_KEY')
-        supabase_bucket_name = os.getenv('SUPABASE_BUCKET_NAME')
-        supabase = create_client(supabase_url, supabase_key)
+        # Create a new File instance
+        file_instance = File(
+            user=request.user,  # Automatically set the user to the authenticated user
+            chapter_name=chapter_name,
+            name=name,
+            file=file
+        )
+        file_instance.save()
 
-        try:
-            # Upload file to Supabase Storage
-            file_data = file.read()
-            file_name = file.name  # Use the original file name or generate a unique name
-            res = supabase.storage.from_(supabase_bucket_name).upload(file_name, file_data, file.content_type)
+        # Serialize the instance and return the response
+        serializer = self.get_serializer(file_instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+# class FileListCreateView(generics.ListCreateAPIView):
+#     queryset = File.objects.all()
+#     serializer_class = FileSerializer
+#     parser_classes = (MultiPartParser, FormParser)
 
-            # Get the public URL of the uploaded file
-            file_url = supabase.storage.from_(supabase_bucket_name).get_public_url(file_name)
+#     def create(self, request, *args, **kwargs):
+#         # Extract data from the request
+#         chapter_name = request.data.get('chapter_name', '')
+#         name = request.data.get('name', 'Untitled File')
+#         file = request.FILES.get('file')  # Use request.FILES for file uploads
 
-            # Create a new File instance with the Supabase file URL
-            file_instance = File(
-                user=request.user,  # Automatically set the user to the authenticated user
-                chapter_name=chapter_name,
-                name=name,
-                file=file_url  # Save the Supabase file URL instead of the file itself
-            )
-            file_instance.save()
+#         # Validate required fields
+#         if not file:
+#             return Response({"error": "File is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Serialize the instance and return the response
-            serializer = self.get_serializer(file_instance)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         # Initialize Supabase client
+#         supabase_url = os.getenv('SUPABASE_URL')
+#         supabase_key = os.getenv('SUPABASE_KEY')
+#         supabase_bucket_name = os.getenv('SUPABASE_BUCKET_NAME')
+#         supabase = create_client(supabase_url, supabase_key)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         try:
+#             # Upload file to Supabase Storage
+#             file_data = file.read()
+#             file_name = file.name  # Use the original file name or generate a unique name
+#             res = supabase.storage.from_(supabase_bucket_name).upload(file_name, file_data, file.content_type)
+
+#             # Get the public URL of the uploaded file
+#             file_url = supabase.storage.from_(supabase_bucket_name).get_public_url(file_name)
+
+#             # Create a new File instance with the Supabase file URL
+#             file_instance = File(
+#                 user=request.user,  # Automatically set the user to the authenticated user
+#                 chapter_name=chapter_name,
+#                 name=name,
+#                 file=file_url  # Save the Supabase file URL instead of the file itself
+#             )
+#             file_instance.save()
+
+#             # Serialize the instance and return the response
+#             serializer = self.get_serializer(file_instance)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class FileListView(generics.ListAPIView):

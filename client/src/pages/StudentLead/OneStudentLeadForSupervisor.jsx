@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Chat from "../Chat/Chat";
 import ViewProjectChapters from "../ViewProject/ViewProjectChapters";
 import Footer from "../../components/Footer";
+import Header from "../../components/Header";
 
 const StudentLeadForSupervisor = () => {
   const navigate = useNavigate();
@@ -72,6 +73,8 @@ const StudentLeadForSupervisor = () => {
 
   return (
     <div className="w-full mx-auto p-2 bg-gray-200 rounded-lg">
+
+      <Header />
       {/* Show a spinner overlay if still loading */}
       {loading && (
         <div className="flex justify-center items-center h-screen">
@@ -89,7 +92,7 @@ const StudentLeadForSupervisor = () => {
             </div>
           )}
 
-          <h2 className="text-3xl font-semibold mb-6 text-center text-green-600">
+          <h2 className="text-xl font-semibold mb-6 text-center text-green-600">
             Student/-Leads More Data:
           </h2>
 
@@ -97,22 +100,22 @@ const StudentLeadForSupervisor = () => {
           <div className="grid text-center">
             {information ? (
               <div key={information.user_id} className="p-4 rounded-md">
-                <h4 className="text-xl font-semibold my-2">
+                <h4 className="text-lg font-semibold my-2">
                   <span className="text-green-500 font-semibold">Student Lead:</span>{" "}
                   {information.student_lead.first_name} {information.student_lead.last_name}
                 </h4>
-                <h4 className="text-xl font-semibold my-2">
+                <h4 className="text-lg font-semibold my-2">
                   <span className="text-green-500 font-semibold">Programme: </span>
                   {information.student_lead.programme}
                 </h4>
-                <h4 className="text-xl font-semibold my-2">
+                <h4 className="text-lg font-semibold my-2">
                   <span className="text-green-500 font-semibold">Registration No: </span>
                   {information.student_lead.user.username}
                 </h4>
 
                 {/* PROJECT DETAILS */}
                 <section className="">
-                  <fieldset className="border-2 rounded-lg border-green-500 p-2 sm:p-6">
+                  <fieldset className=" rounded-lg border-green-500 p-2 sm:p-6">
                     <legend className="font-semibold text-lg text-yellow-400 px-2">
                       Project
                     </legend>
@@ -140,9 +143,15 @@ const StudentLeadForSupervisor = () => {
                   </fieldset>
                 </section>
 
+            {/* Project Chapters of student */}
+            <section className="grid">
+              <ViewProjectChapters studentUserId={infos} />
+            </section>
+
+
                 {/* PROJECT MEMBERS */}
                 <section className="mt-12">
-                  <fieldset className="border-t-3 rounded-lg border-green-500 p-4 text-left grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <fieldset className="border-t-2 rounded-lg border-green-500 p-4 text-left grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <legend className="font-semibold text-xl text-yellow-400 px-2">
                       Project Member
                     </legend>
@@ -185,15 +194,12 @@ const StudentLeadForSupervisor = () => {
           <div className="flex flex-col items-center mt-8">
             <button
               onClick={() => navigate(-1)}
-              className="border border-green-400 px-8 rounded-xl py-1 text-md text-gray-500 font-semibold mb-4"
+              className="border border-green-400 cursor-pointer px-8 rounded-xl py-1 text-md text-gray-500 font-semibold mb-4"
             >
               ..homepage
             </button>
 
-            {/* Project Chapters of student */}
-            <section className="grid">
-              <ViewProjectChapters studentUserId={infos} />
-            </section>
+
 
             {/* Chat */}
             <Chat chatInfo={chatData} UserId={user.user_id} />
