@@ -3,135 +3,202 @@ import AuthContext from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const Sidebar = ({ scrollToSection }) => {
-  let { user, logoutUser } = useContext(AuthContext);
+const Sidebar = ({ scrollToSection, isSidebarOpen, setIsSidebarOpen }) => {
+  const { user, logoutUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // State to manage sidebar open/close
-  const [isOpen, setIsOpen] = useState(false); // Closed by default (for mobile)
+  // Determine if the current view is mobile
+  const [isMobileView, setIsMobileView] = useState(false);
 
-  // Function to toggle sidebar open/close
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // Effect to set initial state based on screen size
   useEffect(() => {
-    const checkScreenSize = () => {
-      if (window.matchMedia("(min-width: 640px)").matches) {
-        setIsOpen(true); // Open sidebar by default on desktop
-      } else {
-        setIsOpen(false); // Close sidebar by default on mobile
-      }
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 640);
     };
 
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
+    handleResize(); // Set initial value
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const toggleSidebar = () => {
+    if (isMobileView) {
+      setIsMobileOpen(!isMobileOpen);
+    } else {
+      setIsSidebarOpen(!isSidebarOpen);
+    }
+  };
+
+  const closeSidebar = () => {
+    if (isMobileView) {
+      setIsMobileOpen(false);
+    }
+  };
 
   const handleLogout = () => {
     logoutUser();
-    localStorage.removeItem("userRole"); // Remove role from localStorage
-    navigate("/"); // Redirect to landing page after logout
+    localStorage.removeItem("userRole");
+    navigate("/");
   };
+
+  const handleNavigation = (action) => {
+    if (typeof action === 'function') {
+      action();
+    }
+    closeSidebar();
+  };
+
+  // Navigation items configuration
+  const navItems = [
+    {
+      path: "/profile",
+      label: "Create/Update Profile",
+      icon: "👤",
+      visible: true
+    },
+    {
+      path: "/create_project",
+      label: "Create/Update Project",
+      icon: "📝",
+      visible: user?.role === "student"
+    },
+    {
+      path: "/create_project_chapters",
+      label: "Add Project Chapters",
+      icon: "📑",
+      visible: user?.role === "student"
+    },
+    {
+      path: "/add_member",
+      label: "Add Project Members",
+      icon: "👥",
+      visible: user?.role === "student"
+    },
+    {
+      action: () => scrollToSection("chat"),
+      label: "Continue Chatting",
+      icon: "💬",
+      visible: user?.role === "student"
+    },
+    {
+      action: () => scrollToSection("project"),
+      label: "Project Data",
+      icon: "📊",
+      visible: user?.role === "student"
+    },
+    {
+      action: () => scrollToSection("header"),
+      label: "Back to Top",
+      icon: "⬆️",
+      visible: true
+    },
+    {
+      action: handleLogout,
+      label: "Logout",
+      icon: "🚪",
+      visible: true,
+      isLogout: true
+    }
+  ];
 
   return (
     <>
-      {/* Sidebar Toggle Button (visible on small screens) */}
+      {/* Sidebar Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="fixed sm:hidden top-20 left-2 z-50 p-2 bg-gray-800 text-white rounded-md shadow-lg focus:outline-none"
+        className={`fixed z-50 top-4 left-4 p-2 rounded-md shadow-lg focus:outline-none transition-colors ${
+          (isMobileOpen || isSidebarOpen) 
+            ? "bg-red-600 text-white" 
+            : "bg-green-600 text-white"
+        } sm:top-20 sm:left-4`}
+        aria-label="Toggle sidebar"
       >
-        {isOpen ? "✕" : "☰"}
+        {(isMobileOpen || isSidebarOpen) ? "✕" : "☰"}
       </button>
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-screen bg-gray-800 text-white p-6 transition-all duration-300 ease-in-out transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } w-64 z-40`}
+        className={`fixed top-0 left-0 h-full bg-gray-800 text-white p-6 transition-all duration-300 ease-in-out transform ${
+          isMobileView 
+            ? (isMobileOpen ? "translate-x-0" : "-translate-x-full")
+            : (isSidebarOpen ? "translate-x-0" : "-translate-x-full")
+        } w-64 z-40 overflow-y-auto`}
       >
-        {/* Dashboard Title */}
-        <h1 className="text-2xl font-bold mb-8">Dashboard</h1>
+        {/* Dashboard Header */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+            {user?.role?.toUpperCase()}
+          </div>
+        </div>
 
         {/* Navigation Links */}
         <nav>
-          <ul className="space-y-4">
-            <li>
-              <button className="cursor-pointer py-2 text-sm sm:text-md text-white font-semibold">
-                <Link to="/profile">Create/Update Profile</Link>
-              </button>
-            </li>
-            <li>
-              {user.role === "student" ? (
-                <div>
-                  <button className="py-2 text-white font-semibold ">
-                    <Link to="/create_project">Create/Update Project</Link>
-                  </button>
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </li>
-            {user.role === "student" ? (
-              <div>
-                <button className="py-2 text-white font-semibold ">
-                  <Link to="/create_project_chapters">
-                    Add Project Chapters +{" "}
-                  </Link>
-                </button>
-              </div>
-            ) : (
-              <div></div>
-            )}
-            <li>
-              {user.role === "student" ? (
-                <div>
-                  <button className="py-2 text-white font-semibold ">
-                    <Link to="/add_member">Add Project Members + </Link>
-                  </button>
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </li>
-
-            <li>
-              <button
-                onClick={() => scrollToSection("chat")} // Call scrollToSection here
-                className="block w-full text-left hover:bg-gray-700 px-4 py-2 rounded text-white"
-              >
-                Continue Chatting..
-              </button>
-            </li>
-
-            <li>
-              <p
-                onClick={handleLogout}
-                className="text-red-500 cursor-pointer hover:underline font-semibold"
-              >
-                Logout
-              </p>
-            </li>
+          <ul className="space-y-2">
+            {navItems.map((item, index) => (
+              item.visible && (
+                <li key={index}>
+                  {item.path ? (
+                    <Link
+                      to={item.path}
+                      onClick={closeSidebar}
+                      className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
+                        item.isLogout 
+                          ? "text-red-400 hover:bg-red-900/30" 
+                          : "text-white hover:bg-gray-700"
+                      }`}
+                    >
+                      <span className="mr-3 text-lg">{item.icon}</span>
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => handleNavigation(item.action)}
+                      className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors ${
+                        item.isLogout 
+                          ? "text-red-400 hover:bg-red-900/30" 
+                          : "text-white hover:bg-gray-700"
+                      }`}
+                    >
+                      <span className="mr-3 text-lg">{item.icon}</span>
+                      <span className="font-medium">{item.label}</span>
+                    </button>
+                  )}
+                </li>
+              )
+            ))}
           </ul>
         </nav>
+
+        {/* User Info */}
+        <div className="mt-auto pt-6 border-t border-gray-700">
+          <div className="flex items-center">
+            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+              {user?.username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">{user?.username || user?.email}</p>
+              <p className="text-xs text-gray-400">{user?.role}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Overlay for small screens (click to close sidebar) */}
-      {isOpen && (
+      {/* Overlay for mobile */}
+      {isMobileOpen && (
         <div
-          onClick={toggleSidebar}
-          className="fixed sm:hidden inset-0 bg-black/50 z-30"
+          onClick={closeSidebar}
+          className="fixed inset-0 bg-black/50 z-30 sm:hidden"
         ></div>
       )}
     </>
   );
 };
 
-
 Sidebar.propTypes = {
-    scrollToSection: PropTypes.func.isRequired, // Validate scrollToSection as a required function
-  };
-  
-  export default Sidebar;
+  scrollToSection: PropTypes.func.isRequired,
+  isSidebarOpen: PropTypes.bool.isRequired,
+  setIsSidebarOpen: PropTypes.func.isRequired,
+};
+
+export default Sidebar;
